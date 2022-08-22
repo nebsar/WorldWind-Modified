@@ -34,6 +34,7 @@ public class TPKLayer extends ProceduralTiledImageLayer {
         this(initParams(source, layerName));
 
         tpkFile = new TPKFile(new File((String) source));
+        setName(layerName);
     }
 
     private static LevelSet initParams(Object source, String layerName) {
@@ -46,7 +47,7 @@ public class TPKLayer extends ProceduralTiledImageLayer {
         params.setValue(AVKey.SERVICE, "file://" + layerName + "?");
         params.setValue(AVKey.TILE_WIDTH, 256);
         params.setValue(AVKey.TILE_HEIGHT, 256);
-        params.setValue(AVKey.DATA_CACHE_NAME, "Earth/MBTile/".concat(layerName));
+        params.setValue(AVKey.DATA_CACHE_NAME, "Earth/TPKLayers/".concat(layerName));
         params.setValue(AVKey.DATASET_NAME, "h");
         params.setValue(AVKey.FORMAT_SUFFIX, "." + file.getImageFormat());
         System.out.println(file.getImageFormat());
