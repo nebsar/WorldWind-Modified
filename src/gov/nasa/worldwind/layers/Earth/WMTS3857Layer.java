@@ -1,6 +1,5 @@
 package gov.nasa.worldwind.layers.Earth;
 
-
 import gov.nasa.worldwind.avlist.*;
 import gov.nasa.worldwind.geom.*;
 import gov.nasa.worldwind.layers.mercator.*;
@@ -15,21 +14,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class WMTS3857Layer extends BasicMercatorTiledImageLayer {
 
-    protected static List<String> compatibleImageFormats =
-            Arrays.asList("image/png",
+    protected static List<String> compatibleImageFormats
+            = Arrays.asList("image/png",
                     "image/jpg",
                     "image/jpeg",
                     "image/gif",
                     "image/bmp");
 
-    protected static List<String> compatibleCoordinateSystems =
-            Arrays.asList("urn:ogc:def:crs:OGC:1.3:CRS84",
-                    "urn:ogc:def:crs:EPSG::4326",
-                    "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                    "urn:ogc:def:crs:EPSG::3857");
+    protected static List<String> compatibleCoordinateSystems
+            = Arrays.asList("urn:ogc:def:crs:EPSG::3857");
 
     public WMTS3857Layer(WMTS100Capabilities caps, String layerName) {
         super(makeLevels(caps, layerName));
@@ -66,12 +61,15 @@ public class WMTS3857Layer extends BasicMercatorTiledImageLayer {
         WmtsTileMatrixSet tileMatrixSet = wmtsLayer.getCapabilities().getTileMatrixSet("GoogleMapsCompatible");
 
         int imageSize = tileMatrixSet.getTileMatrices().get(0).getTileHeight();
+        
+        String styleIdentifier = wmtsLayer.getStyles().get(0).getIdentifier();
 
         AVList params = new AVListImpl();
 
         params.setValue(AVKey.TILE_WIDTH, imageSize);
         params.setValue(AVKey.TILE_HEIGHT, imageSize);
-        params.setValue(AVKey.DATA_CACHE_NAME, "Earth/WMTS/"+layerName);
+        params.setValue(AVKey.STYLE_NAMES, styleIdentifier);
+        params.setValue(AVKey.DATA_CACHE_NAME, "Earth/WMTS/" + layerName);
         params.setValue("URLTemplate", template);
         params.setValue(AVKey.DATASET_NAME, "*");
         params.setValue(AVKey.FORMAT_SUFFIX, ".jpg");
@@ -91,18 +89,22 @@ public class WMTS3857Layer extends BasicMercatorTiledImageLayer {
         public static String TILEMATRIX_TEMPLATE = "{TileMatrix}";
         public static String TILEROW_TEMPLATE = "{TileRow}";
         public static String TILECOL_TEMPLATE = "{TileCol}";
+        public static String STYLE_TEMPLATE = "{style}";
         String URLTemplate;
+        String style;
 
         public URLBuilder(AVList params) {
-           URLTemplate = params.getStringValue("URLTemplate");
+            URLTemplate = params.getStringValue("URLTemplate");
+            this.style = params.getStringValue(AVKey.STYLE_NAMES);
         }
 
         public URL getURL(Tile tile, String imageFormat)
                 throws MalformedURLException {
 
-            String url = this.URLTemplate.replace(TILEMATRIX_TEMPLATE, (tile.getLevelNumber() + 3)+"");
+            String url = this.URLTemplate.replace(TILEMATRIX_TEMPLATE, (tile.getLevelNumber() + 3) + "");
             url = url.replace(TILEROW_TEMPLATE, ((1 << (tile.getLevelNumber()) + 3) - 1 - tile.getRow()) + "");
             url = url.replace(TILECOL_TEMPLATE, tile.getColumn() + "");
+            url = url.replace(STYLE_TEMPLATE, this.style);
             url = url.replace("{", "%7B");
             url = url.replace("}", "%7D");
 

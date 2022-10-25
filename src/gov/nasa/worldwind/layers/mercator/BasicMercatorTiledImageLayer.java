@@ -264,7 +264,7 @@ public class BasicMercatorTiledImageLayer extends MercatorTiledImageLayer
 
         Retriever retriever;
 
-        if ("http".equalsIgnoreCase(url.getProtocol()))
+        if ("http".equalsIgnoreCase(url.getProtocol()) || "https".equalsIgnoreCase(url.getProtocol()))
         {
             retriever = new HTTPRetriever(url, new DownloadPostProcessor(tile, this));
             retriever.setValue(URLRetriever.EXTRACT_ZIP_ENTRY, "true"); // supports legacy layers
