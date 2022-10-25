@@ -161,6 +161,7 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
      * @param sidc MIL-STD-2525 symbol identification code (SIDC).
      */
     @SuppressWarnings({"unchecked"})
+    @Override
     public MilStd2525TacticalGraphic createGraphic(String sidc, Iterable<? extends Position> positions,
         AVList modifiers)
     {

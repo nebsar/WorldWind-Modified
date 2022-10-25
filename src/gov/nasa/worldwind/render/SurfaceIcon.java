@@ -420,6 +420,7 @@ public class SurfaceIcon extends AbstractSurfaceRenderable implements Movable, D
         return this.computeExtent(dc);
     }
 
+    @Override
     public void drawGeographic(DrawContext dc, SurfaceTileDrawContext sdc)
     {
         WWTexture texture = getTexture();

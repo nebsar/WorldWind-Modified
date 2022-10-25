@@ -1,16 +1,12 @@
-/*
- * Copyright (C) 2016 United States Government as represented by the Administrator of the
- * National Aeronautics and Space Administration.
- * All Rights Reserved.
- */
 package gov.nasa.worldwind.layers.mercator.sqlitemap;
+
+
 
 import gov.nasa.worldwind.layers.mercator.ProceduralTiledImageLayer;
 import gov.nasa.worldwind.avlist.*;
 import gov.nasa.worldwind.geom.*;
 import gov.nasa.worldwind.layers.mercator.MercatorSector;
 import gov.nasa.worldwind.layers.mercator.MercatorTextureTile;
-import gov.nasa.worldwind.layers.mercator.mbtiles.MetadataEntry;
 import gov.nasa.worldwind.util.*;
 
 import javax.imageio.ImageIO;

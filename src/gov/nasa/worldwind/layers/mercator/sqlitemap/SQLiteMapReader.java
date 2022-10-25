@@ -1,7 +1,5 @@
 package gov.nasa.worldwind.layers.mercator.sqlitemap;
 
-import gov.nasa.worldwind.layers.mercator.mbtiles.*;
-import gov.nasa.worldwind.layers.mercator.mbtiles.MetadataEntry;
 import gov.nasa.worldwind.layers.mercator.sqlutil.SQLHelper;
 import java.io.File;
 import java.io.InputStream;

@@ -25,7 +25,6 @@
  * NASA World Wind Java (WWJ)  can be found in the WorldWindJava-v2.2 3rd-party
  * notices and licenses PDF found in code directory.
  */
-
 package gov.nasa.worldwindx.examples;
 
 import gov.nasa.worldwind.*;
@@ -34,21 +33,26 @@ import gov.nasa.worldwindx.examples.util.DirectedPath;
 import gov.nasa.worldwind.geom.*;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.*;
+import gov.nasa.worldwindx.examples.util.DirectedSurfacePolyline;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import java.util.ArrayList;
+import java.util.List;
+import javax.swing.SwingUtilities;
 
 /**
- * Shows how to draw a {@link Path} with direction arrowheads between the points.
+ * Shows how to draw a {@link Path} with direction arrowheads between the
+ * points.
  *
  * @author pabercrombie
  * @version $Id: PathsWithDirection.java 2109 2014-06-30 16:52:38Z tgaskins $
  */
-public class PathsWithDirection extends ApplicationTemplate
-{
-    public static class AppFrame extends ApplicationTemplate.AppFrame
-    {
-        public AppFrame()
-        {
+public class PathsWithDirection extends ApplicationTemplate {
+
+    public static class AppFrame extends ApplicationTemplate.AppFrame {
+
+        public AppFrame() {
             super(true, true, false);
 
             RenderableLayer layer = new RenderableLayer();
@@ -72,12 +76,23 @@ public class PathsWithDirection extends ApplicationTemplate
             pathPositions.add(Position.fromDegrees(49.11509767012883, -122.7459193678911, 10));
             pathPositions.add(Position.fromDegrees(49.11467371318521, -122.7563706291131, 10));
 
-            Path path = new DirectedPath(pathPositions);
+            DirectedSurfacePolyline path = new DirectedSurfacePolyline(pathPositions);
+            // path.setFollowTerrain(true);
+            SwingUtilities.invokeLater(() -> {
+                ((List) path.getLocations()).add(Position.fromDegrees(49.11467371318521, 122.7563706291131, 10));
+            });
+            
+            getWwd().getInputHandler().addMouseWheelListener(new MouseWheelListener() {
+                @Override
+                public void mouseWheelMoved(MouseWheelEvent e) {
+                    System.out.println(e.getPreciseWheelRotation());
+                }
+            });
 
             // To ensure that the arrowheads resize smoothly, refresh each time the path is drawn.
             path.setAttributes(attrs);
             path.setVisible(true);
-            path.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+            //  path.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
             path.setPathType(AVKey.GREAT_CIRCLE);
             layer.addRenderable(path);
 
@@ -86,8 +101,7 @@ public class PathsWithDirection extends ApplicationTemplate
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         Configuration.setValue(AVKey.INITIAL_LATITUDE, 49.06);
         Configuration.setValue(AVKey.INITIAL_LONGITUDE, -122.77);
         Configuration.setValue(AVKey.INITIAL_ALTITUDE, 22000);

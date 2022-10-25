@@ -2350,8 +2350,11 @@ public abstract class AbstractTacticalSymbol extends WWObjectImpl implements Tac
                 }
 
                 Point p = modifier.getPoint();
+                tr.setColor(Color.BLACK);
+                tr.draw(modifier.getText(), p.x+1, p.y-1);
                 tr.setColor(modifier.getColor());
                 tr.draw(modifier.getText(), p.x, p.y);
+                
             }
         }
         finally

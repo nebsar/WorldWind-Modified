@@ -1,12 +1,9 @@
 package gov.nasa.worldwind.ogc.wmts;
 
-
 import gov.nasa.worldwind.ogc.OGCConstants;
-import gov.nasa.worldwind.ogc.ows.*;
-import gov.nasa.worldwind.ogc.wms.WMSLayerCapabilities;
 import gov.nasa.worldwind.util.*;
 import gov.nasa.worldwind.util.xml.*;
-import gov.nasa.worldwind.wms.CapabilitiesRequest;
+import gov.nasa.worldwind.wmts.WMTSCapabilitiesRequest;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
@@ -54,8 +51,7 @@ public class WMTS100Capabilities extends AbstractXMLEventParser {
      */
     public static WMTS100Capabilities retrieve(URI uri) throws Exception {
         try {
-            CapabilitiesRequest request = new CapabilitiesRequest(uri, "WMTS");
-            request.setVersion("1.0.0");
+            WMTSCapabilitiesRequest request = new WMTSCapabilitiesRequest(uri, "WMTS");
 
             return new WMTS100Capabilities(request.toString());
         } catch (URISyntaxException e) {

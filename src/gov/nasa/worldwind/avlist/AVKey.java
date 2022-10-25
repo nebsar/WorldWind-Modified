@@ -94,24 +94,28 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String DATA_CACHE_NAME = "gov.nasa.worldwind.avkey.DataCacheNameKey";
     final String DATA_FILE_STORE_CLASS_NAME = "gov.nasa.worldwind.avkey.DataFileStoreClassName";
     final String DATA_FILE_STORE_CONFIGURATION_FILE_NAME
-        = "gov.nasa.worldwind.avkey.DataFileStoreConfigurationFileName";
+            = "gov.nasa.worldwind.avkey.DataFileStoreConfigurationFileName";
     final String DATASET_NAME = "gov.nasa.worldwind.avkey.DatasetNameKey";
     final String DATA_RASTER_READER_FACTORY_CLASS_NAME = "gov.nasa.worldwind.avkey.DataRasterReaderFactoryClassName";
     final String DATASET_TYPE = "gov.nasa.worldwind.avkey.DatasetTypeKey";
     final String DATE_TIME = "gov.nasa.worldwind.avkey.DateTime";
     /**
-     * Indicates the primitive data type of a dataset or a buffer of data. When used as a key, the corresponding value
-     * may be one of the following: <code>INT8</code>, <code>INT16</code>, <code>INT32</code>, <code>INT64</code>,
-     * <code>FLOAT32</code>, or <code>FLOAT64</code>.
+     * Indicates the primitive data type of a dataset or a buffer of data. When
+     * used as a key, the corresponding value may be one of the following:
+     * <code>INT8</code>, <code>INT16</code>, <code>INT32</code>,
+     * <code>INT64</code>, <code>FLOAT32</code>, or <code>FLOAT64</code>.
      */
     final String DATA_TYPE = "gov.nasa.worldwind.avkey.DataType";
     final String DELETE_CACHE_ON_EXIT = "gov.nasa.worldwind.avkey.DeleteCacheOnExit";
     /**
-     * Indicates the WorldWind scene's worst-case depth resolution, in meters. This is typically interpreted by the
-     * View as the desired resolution at the scene's maximum drawing distance. In this case, the resolution closer to
-     * the viewer's eye point is significantly better then the worst-case resolution. Decreasing this value enables the
-     * viewer to get closer to 3D shapes positioned above the terrain at the coast of potential rendering artifacts
-     * between shapes that are places closely together or close to the terrain.
+     * Indicates the WorldWind scene's worst-case depth resolution, in meters.
+     * This is typically interpreted by the View as the desired resolution at
+     * the scene's maximum drawing distance. In this case, the resolution closer
+     * to the viewer's eye point is significantly better then the worst-case
+     * resolution. Decreasing this value enables the viewer to get closer to 3D
+     * shapes positioned above the terrain at the coast of potential rendering
+     * artifacts between shapes that are places closely together or close to the
+     * terrain.
      */
     final String DEPTH_RESOLUTION = "gov.nasa.worldwind.avkey.DepthResolution";
     final String DESCRIPTION = "gov.nasa.worldwind.avkey.Description";
@@ -120,7 +124,8 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String DISPLAY_NAME = "gov.nasa.worldwind.avkey.DisplayName";
     final String DOCUMENT = "gov.nasa.worldwind.avkey.Document";
     /**
-     * Indicates the state of dragging. Provided by the {@link gov.nasa.worldwind.drag.DragContext} object to objects
+     * Indicates the state of dragging. Provided by the
+     * {@link gov.nasa.worldwind.drag.DragContext} object to objects
      * implementing {@link gov.nasa.worldwind.drag.Draggable}.
      */
     final String DRAG_BEGIN = "gov.nasa.worldwind.avkey.DragBegin";
@@ -196,8 +201,9 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String IMAGE = "gov.nasa.worldwind.avkey.Image";
     final String IMAGE_FORMAT = "gov.nasa.worldwind.avkey.ImageFormat";
     /**
-     * Indicates whether an image represents color or grayscale values. When used as a key, the corresponding value may
-     * be one of the following: <code>COLOR</code> or <code>GRAYSCALE</code>.
+     * Indicates whether an image represents color or grayscale values. When
+     * used as a key, the corresponding value may be one of the following:
+     * <code>COLOR</code> or <code>GRAYSCALE</code>.
      */
     final String IMAGE_COLOR_FORMAT = "gov.nasa.worldwind.avkey.ImageColorFormat";
     final String INACTIVE_LEVELS = "gov.nasa.worldwind.avkey.InactiveLevels";
@@ -239,8 +245,9 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String MARS_ELEVATION_MODEL_CONFIG_FILE = "gov.nasa.worldwind.avkey.MarsElevationModelConfigFile";
 
     /**
-     * Describes the maximum number of attempts to make when downloading a resource before attempts are suspended.
-     * Attempts are restarted after the interval specified by {@link #MIN_ABSENT_TILE_CHECK_INTERVAL}.
+     * Describes the maximum number of attempts to make when downloading a
+     * resource before attempts are suspended. Attempts are restarted after the
+     * interval specified by {@link #MIN_ABSENT_TILE_CHECK_INTERVAL}.
      *
      * @see #MIN_ABSENT_TILE_CHECK_INTERVAL
      */
@@ -250,16 +257,18 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String MAX_MESSAGE_REPEAT = "gov.nasa.worldwind.avkey.MaxMessageRepeat";
     final String MEMORY_CACHE_SET_CLASS_NAME = "gov.nasa.worldwind.avkey.MemoryCacheSetClassName";
     /**
-     * Indicates the location that MIL-STD-2525 tactical symbols and tactical point graphics retrieve their icons from.
-     * When used as a key, the corresponding value must be a string indicating a URL to a remote server, a URL to a
-     * ZIP/JAR file, or a path to folder on the local file system.
+     * Indicates the location that MIL-STD-2525 tactical symbols and tactical
+     * point graphics retrieve their icons from. When used as a key, the
+     * corresponding value must be a string indicating a URL to a remote server,
+     * a URL to a ZIP/JAR file, or a path to folder on the local file system.
      */
     final String MIL_STD_2525_ICON_RETRIEVER_PATH = "gov.nasa.worldwind.avkey.MilStd2525IconRetrieverPath";
     final String MIME_TYPE = "gov.nasa.worldwind.avkey.MimeType";
 
     /**
-     * Describes the interval to wait before allowing further attempts to download a resource after the number of
-     * attempts specified by {@link #MAX_ABSENT_TILE_ATTEMPTS} are made.
+     * Describes the interval to wait before allowing further attempts to
+     * download a resource after the number of attempts specified by
+     * {@link #MAX_ABSENT_TILE_ATTEMPTS} are made.
      *
      * @see #MAX_ABSENT_TILE_ATTEMPTS
      */
@@ -290,13 +299,15 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String OFFLINE_MODE = "gov.nasa.worldwind.avkey.OfflineMode";
     final String OPACITY = "gov.nasa.worldwind.avkey.Opacity";
     /**
-     * Indicates an object's position in a series. When used as a key, the corresponding value must be an {@link
+     * Indicates an object's position in a series. When used as a key, the
+     * corresponding value must be an {@link
      * Integer} object indicating the ordinal.
      */
     final String ORDINAL = "gov.nasa.worldwind.avkey.Ordinal";
     /**
-     * Indicates a list of one or more object's positions in a series. When used as a key, the corresponding value must
-     * be a {@link java.util.List} of {@link Integer} objects indicating the ordinals.
+     * Indicates a list of one or more object's positions in a series. When used
+     * as a key, the corresponding value must be a {@link java.util.List} of
+     * {@link Integer} objects indicating the ordinals.
      */
     final String ORDINAL_LIST = "gov.nasa.worldwind.avkey.OrdinalList";
     final String ORIGIN = "gov.nasa.worldwind.avkey.Origin";
@@ -312,14 +323,17 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String PICK_ENABLED = "gov.nasa.worldwind.avkey.PickEnabled";
     final String PIXELS = "gov.nasa.worldwind.avkey.Pixels";
     /**
-     * Indicates whether a raster's pixel values represent imagery or elevation data. When used as a key, the
-     * corresponding value may be one of the following: <code>IMAGERY</code> or <code>ELEVATION</code>.
+     * Indicates whether a raster's pixel values represent imagery or elevation
+     * data. When used as a key, the corresponding value may be one of the
+     * following: <code>IMAGERY</code> or <code>ELEVATION</code>.
      */
     final String PIXEL_FORMAT = "gov.nasa.worldwind.avkey.PixelFormat";
     final String PIXEL_HEIGHT = "gov.nasa.worldwind.avkey.PixelHeight";
     final String PIXEL_WIDTH = "gov.nasa.worldwind.avkey.PixelWidth";
-    
-    /** @deprecated Use <code>{@link #DATA_TYPE} instead.</code>. */
+
+    /**
+     * @deprecated Use <code>{@link #DATA_TYPE} instead.</code>.
+     */
     @Deprecated
     final String PIXEL_TYPE = AVKey.DATA_TYPE;
 
@@ -375,14 +389,20 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String REPEAT_XY = "gov.nasa.worldwind.avkey.RepeatXY";
 
     final String RESIZE = "gov.nasa.worldwind.avkey.Resize";
-    /** On window resize, scales the item to occupy a constant relative size of the viewport. */
+    /**
+     * On window resize, scales the item to occupy a constant relative size of
+     * the viewport.
+     */
     final String RESIZE_STRETCH = "gov.nasa.worldwind.CompassLayer.ResizeStretch";
     /**
-     * On window resize, scales the item to occupy a constant relative size of the viewport, but not larger than the
-     * item's inherent size scaled by the layer's item scale factor.
+     * On window resize, scales the item to occupy a constant relative size of
+     * the viewport, but not larger than the item's inherent size scaled by the
+     * layer's item scale factor.
      */
     final String RESIZE_SHRINK_ONLY = "gov.nasa.worldwind.CompassLayer.ResizeShrinkOnly";
-    /** Does not modify the item size when the window changes size. */
+    /**
+     * Does not modify the item size when the window changes size.
+     */
     final String RESIZE_KEEP_FIXED_SIZE = "gov.nasa.worldwind.CompassLayer.ResizeKeepFixedSize";
     final String RETAIN_LEVEL_ZERO_TILES = "gov.nasa.worldwind.avkey.RetainLevelZeroTiles";
     final String RETRIEVAL_POOL_SIZE = "gov.nasa.worldwind.avkey.RetrievalPoolSize";
@@ -479,8 +499,8 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String TILED_IMAGERY = "gov.nasa.worldwind.avkey.TiledImagery";
     final String TILED_ELEVATIONS = "gov.nasa.worldwind.avkey.TiledElevations";
     final String TILED_RASTER_PRODUCER_CACHE_SIZE = "gov.nasa.worldwind.avkey.TiledRasterProducerCacheSize";
-    final String TILED_RASTER_PRODUCER_LARGE_DATASET_THRESHOLD =
-        "gov.nasa.worldwind.avkey.TiledRasterProducerLargeDatasetThreshold";
+    final String TILED_RASTER_PRODUCER_LARGE_DATASET_THRESHOLD
+            = "gov.nasa.worldwind.avkey.TiledRasterProducerLargeDatasetThreshold";
     final String TILED_RASTER_PRODUCER_LIMIT_MAX_LEVEL = "gov.nasa.worldwind.avkey.TiledRasterProducer.LimitMaxLevel";
     final String TILT = "gov.nasa.worldwind.avkey.Tilt";
     final String TITLE = "gov.nasa.worldwind.avkey.Title";
@@ -540,6 +560,7 @@ public interface AVKey // TODO: Eliminate unused constants, if any
     final String WFS_URL = "gov.nasa.worldwind.avkey.WFS.URL";
     final String WCS_VERSION = "gov.nasa.worldwind.avkey.WCSVersion";
     final String WMS_VERSION = "gov.nasa.worldwind.avkey.WMSVersion";
+    final String WMTS_VERSION = "gov.nasa.worldwind.avkey.WMTSVersion";
     final String WORLD_MAP_IMAGE_PATH = "gov.nasa.worldwind.avkey.WorldMapImagePath";
     final String WORLD_WIND_DOT_NET_LAYER_SET = "gov.nasa.worldwind.avkey.WorldWindDotNetLayerSet";
     final String WORLD_WIND_DOT_NET_PERMANENT_DIRECTORY = "gov.nasa.worldwind.avkey.WorldWindDotNetPermanentDirectory";

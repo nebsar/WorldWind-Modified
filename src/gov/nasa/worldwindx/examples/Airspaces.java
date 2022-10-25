@@ -104,6 +104,7 @@ public class Airspaces extends ApplicationTemplate
             layer.addRenderable(partCyl);
 
             Cake cake = new Cake(attrs);
+            cake.setDrawSurfaceShape(true);
             cake.setLayers(Arrays.asList(
                 new Cake.Layer(LatLon.fromDegrees(36, -121), 10000.0, Angle.fromDegrees(0.0),
                     Angle.fromDegrees(360.0), 10000.0, 15000.0),
@@ -298,15 +299,12 @@ public class Airspaces extends ApplicationTemplate
             Cake cake = new Cake(attrs);
             cake.setLayers(Arrays.asList(
                 new Cake.Layer(LatLon.fromDegrees(46.7477, -121.6372), 10000.0, Angle.fromDegrees(190.0),
-                    Angle.fromDegrees(170.0), 10000.0, 15000.0),
-                new Cake.Layer(LatLon.fromDegrees(46.7477, -121.6372), 15000.0, Angle.fromDegrees(190.0),
-                    Angle.fromDegrees(90.0), 16000.0, 21000.0),
-                new Cake.Layer(LatLon.fromDegrees(46.7477, -121.6372), 12500.0, Angle.fromDegrees(270.0),
-                    Angle.fromDegrees(60.0), 22000.0, 27000.0)));
-            cake.getLayers().get(0).setTerrainConforming(false, false);
-            cake.getLayers().get(1).setTerrainConforming(false, false);
-            cake.getLayers().get(2).setTerrainConforming(false, false);
+                    Angle.fromDegrees(170.0), 10000.0, 15000.0)));
+//            cake.getLayers().get(0).setTerrainConforming(false, false);
+//            cake.getLayers().get(1).setTerrainConforming(false, false);
+//            cake.getLayers().get(2).setTerrainConforming(false, false);
             cake.setValue(AVKey.DISPLAY_NAME, "3 layer Cake");
+               cake.setDrawSurfaceShape(true);
             layer.addRenderable(cake);
 
             // Left Orbit

@@ -115,6 +115,7 @@ public class Symbology extends ApplicationTemplate
             // friendly Supporting Attack.
             TacticalGraphicFactory factory = new MilStd2525GraphicFactory();
             TacticalGraphic graphic = factory.createGraphic("GFGPOLAGS-----X", positions, null);
+            System.out.println(graphic.getClass().getCanonicalName());
             graphic.setValue(AVKey.DISPLAY_NAME, "MIL-STD-2525 Tactical Graphic"); // Tool tip text.
             layer.addRenderable(graphic);
 

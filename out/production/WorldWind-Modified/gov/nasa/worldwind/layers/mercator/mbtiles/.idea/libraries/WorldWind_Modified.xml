@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="WorldWind-Modified">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/junit-4.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/gluegen-rt-natives-macosx-universal.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/gdal.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/gluegen-rt-natives-linux-amd64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/mbtiles4j-1.0.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/jogl-all-natives-windows-amd64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/gluegen-rt-natives-windows-amd64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/gluegen-rt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/jogl-all-natives-linux-amd64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/jogl-all-natives-macosx-universal.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/sqlite-jdbc-3.36.0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/jogl-all.jar!/" />
+      <root url="jar://$PROJECT_DIR$/out/production/WorldWind-Modified/vpf-symbols.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

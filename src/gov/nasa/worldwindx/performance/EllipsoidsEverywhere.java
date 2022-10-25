@@ -175,6 +175,9 @@ public class EllipsoidsEverywhere extends ApplicationTemplate
                     ++count;
                 }
             }
+            
+            System.out.println("How many: " + count);
+            
             System.out.printf("%d %s, Altitude mode = %s\n", count, shapeType,
                 altitudeMode == WorldWind.RELATIVE_TO_GROUND ? "RELATIVE_TO_GROUND" : "ABSOLUTE");
         }

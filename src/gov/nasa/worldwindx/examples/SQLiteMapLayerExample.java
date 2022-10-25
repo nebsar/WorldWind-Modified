@@ -11,8 +11,6 @@ package gov.nasa.worldwindx.examples;
 
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.geom.Angle;
-import gov.nasa.worldwind.layers.mercator.mbtiles.MapBoxTileLayer;
 import gov.nasa.worldwind.layers.mercator.sqlitemap.SQLiteMapLayer;
 import gov.nasa.worldwind.util.WWUtil;
 
@@ -31,7 +29,7 @@ public class SQLiteMapLayerExample extends ApplicationTemplate {
         public AppFrame() {
             super(true, true, false);
             this.layer1 = new SQLiteMapLayer("Toronto", "Toronto Sectionals", "5000_Toronto_2205_187_nomosaic.sqlite");
-            layer1.setOpacity(0.5);
+           // layer1.setOpacity(0.5);
          //   this.layer2 = new SQLiteMapLayer("Montreal", "Montreal Sectionals", "5002_Montreal_2205_187_nomosaic.sqlite");
            this.layer1.setUseMipMaps(true);
             insertBeforePlacenames(getWwd(), this.layer1);

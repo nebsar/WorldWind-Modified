@@ -62,7 +62,7 @@ public class ShapeEditing extends ApplicationTemplate
             RenderableLayer layer = new RenderableLayer();
 
             // Airspaces
-            boolean useSurfaceAirspaces = false;
+            boolean useSurfaceAirspaces = true;
 
             AirspaceAttributes attrs = new BasicAirspaceAttributes();
             attrs.setDrawInterior(true);
@@ -87,8 +87,10 @@ public class ShapeEditing extends ApplicationTemplate
             polygon.setAltitudes(1e4, 2e4);
             polygon.setAltitudeDatum(AVKey.ABOVE_GROUND_LEVEL, AVKey.ABOVE_GROUND_LEVEL);
             layer.addRenderable(polygon);
+            
+            
 
-            CappedCylinder cylinder = new CappedCylinder(LatLon.fromDegrees(40.5, -118), 5e4);
+            CappedCylinder cylinder = new CappedCylinder(LatLon.fromDegrees(40.5, -118), 5e4);            
             cylinder.setDrawSurfaceShape(useSurfaceAirspaces);
             cylinder.setAttributes(attrs);
             cylinder.setHighlightAttributes(highlightAttrs);
@@ -106,7 +108,7 @@ public class ShapeEditing extends ApplicationTemplate
             layer.addRenderable(cylinder);
 
             Orbit orbit = new Orbit(LatLon.fromDegrees(40, -114), LatLon.fromDegrees(41, -114), Orbit.OrbitType.CENTER,
-                4e4);
+                4e4);   
             orbit.setDrawSurfaceShape(useSurfaceAirspaces);
             orbit.setAttributes(attrs);
             orbit.setHighlightAttributes(highlightAttrs);

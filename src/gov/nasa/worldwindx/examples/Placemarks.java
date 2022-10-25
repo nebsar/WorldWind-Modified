@@ -25,12 +25,12 @@
  * NASA World Wind Java (WWJ)  can be found in the WorldWindJava-v2.2 3rd-party
  * notices and licenses PDF found in code directory.
  */
-
 package gov.nasa.worldwindx.examples;
 
 import gov.nasa.worldwind.*;
 import gov.nasa.worldwind.avlist.*;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.Earth.MGRSGraticuleLayer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.*;
 import gov.nasa.worldwind.symbology.IconRetriever;
@@ -42,31 +42,33 @@ import java.awt.*;
 import java.awt.image.*;
 
 /**
- * Illustrates how to use {@link gov.nasa.worldwind.render.PointPlacemark}. Also shows how to use a 2525 tactical
- * symbol as a placemark image.
+ * Illustrates how to use {@link gov.nasa.worldwind.render.PointPlacemark}. Also
+ * shows how to use a 2525 tactical symbol as a placemark image.
  *
  * @see gov.nasa.worldwindx.examples.PlacemarkLabelEditing
  *
  * @author tag
  * @version $Id: Placemarks.java 2812 2015-02-17 21:00:43Z tgaskins $
  */
-public class Placemarks extends ApplicationTemplate
-{
-    public static class AppFrame extends ApplicationTemplate.AppFrame
-    {
-        public AppFrame()
-        {
+public class Placemarks extends ApplicationTemplate {
+
+    public static class AppFrame extends ApplicationTemplate.AppFrame {
+
+        public AppFrame() {
             super(true, true, false);
 
             final RenderableLayer layer = new RenderableLayer();
-
+            //MGRSGraticuleLayer mgrs = new MGRSGraticuleLayer();
+            //getWwd().getModel().getLayers().add(mgrs);
             PointPlacemark pp = new PointPlacemark(Position.fromDegrees(28, -102, 1e4));
+
             pp.setLabelText("Placemark A");
             pp.setValue(AVKey.DISPLAY_NAME, "Clamp to ground, Label, Semi-transparent, Audio icon");
             pp.setLineEnabled(false);
             pp.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
             pp.setEnableLabelPicking(true); // enable label picking for this placemark
             PointPlacemarkAttributes attrs = new PointPlacemarkAttributes();
+
             attrs.setImageAddress("gov/nasa/worldwindx/examples/images/audioicon-64.png");
             attrs.setImageColor(new Color(1f, 1f, 1f, 0.6f));
             attrs.setScale(0.6);
@@ -223,11 +225,9 @@ public class Placemarks extends ApplicationTemplate
 
             // Create a placemark that uses a 2525C tactical symbol. The symbol is downloaded from the internet on a
             // separate thread.
-            WorldWind.getTaskService().addTask(new Runnable()
-            {
+            WorldWind.getTaskService().addTask(new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     createTacticalSymbolPointPlacemark(layer);
                 }
             });
@@ -237,14 +237,13 @@ public class Placemarks extends ApplicationTemplate
         }
     }
 
-    public static void createTacticalSymbolPointPlacemark(final RenderableLayer layer)
-    {
+    public static void createTacticalSymbolPointPlacemark(final RenderableLayer layer) {
         // *** This method is running on thread separate from the EDT. ***
 
         // Create an icon retriever using the path specified in the config file, or the default path.
         String iconRetrieverPath = Configuration.getStringValue(AVKey.MIL_STD_2525_ICON_RETRIEVER_PATH,
-            MilStd2525Constants.DEFAULT_ICON_RETRIEVER_PATH);
-        IconRetriever iconRetriever = new MilStd2525IconRetriever(iconRetrieverPath);
+                MilStd2525Constants.DEFAULT_ICON_RETRIEVER_PATH);
+        IconRetriever iconRetriever = new MilStd2525IconRetriever("jar:file:testData/milstd2525-symbols.zip!");
 
         // Retrieve the tactical symbol image we'll use for the placemark.
         AVList params = new AVListImpl();
@@ -255,47 +254,57 @@ public class Placemarks extends ApplicationTemplate
         final BufferedImage highlightImage = iconRetriever.createIcon("SFAPMFQM--GIUSA", params);
 
         // Add the placemark to WorldWind on the event dispatch thread.
-        SwingUtilities.invokeLater(new Runnable()
-        {
+        SwingUtilities.invokeLater(new Runnable() {
+            double minLat = 35, maxLat = 45, minLon = -85, maxLon = -80;
+            double delta = 0.1;
+
             @Override
-            public void run()
-            {
-                try
-                {
-                    // Create the placemark
-                    PointPlacemark pp = new PointPlacemark(Position.fromDegrees(30, -102, 0));
-                    pp.setLabelText("Tactical Symbol");
-                    pp.setLineEnabled(false);
-                    pp.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                    pp.setEnableLabelPicking(true);
-                    pp.setAlwaysOnTop(true); // Set this flag just to show how to force the placemark to the top
+            public void run() {
+                try {
 
-                    // Create and assign the placemark attributes.
-                    PointPlacemarkAttributes attrs = new PointPlacemarkAttributes();
-                    attrs.setImage(symbolImage);
-                    attrs.setImageColor(new Color(1f, 1f, 1f, 1f));
-                    attrs.setLabelOffset(new Offset(0.9d, 0.6d, AVKey.FRACTION, AVKey.FRACTION));
-                    attrs.setScale(0.5);
-                    pp.setAttributes(attrs);
+                    int count = 0;
+                    for (double lat = minLat; lat <= maxLat; lat += delta) {
+                        for (double lon = minLon; lon <= maxLon; lon += delta) {
+                            PointPlacemark pp = new PointPlacemark(Position.fromDegrees(lat, lon, 0));
+                            pp.setEnableDecluttering(true);
+                            pp.setEnableLabelPicking(true);
+                            pp.setEnableBatchRendering(true);
+                            pp.setLabelText("Entity " + (count + 1));
+                            pp.setLineEnabled(false);
+                            pp.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                            pp.setEnableLabelPicking(true);
+                            pp.setAlwaysOnTop(true); // Set this flag just to show how to force the placemark to the top
 
-                    // Create and assign the placemark's highlight attributes.
-                    PointPlacemarkAttributes highlightAttributes = new PointPlacemarkAttributes(attrs);
-                    highlightAttributes.setImage(highlightImage);
-                    pp.setHighlightAttributes(highlightAttributes);
+                            // Create and assign the placemark attributes.
+                            PointPlacemarkAttributes attrs = new PointPlacemarkAttributes();
+                            attrs.setImage(symbolImage);
+                            attrs.setImageColor(new Color(1f, 1f, 1f, 1f));
+                            attrs.setLabelOffset(new Offset(0.9d, 0.6d, AVKey.FRACTION, AVKey.FRACTION));
+                            attrs.setScale(0.1);
 
-                    // Add the placemark to the layer.
-                    layer.addRenderable(pp);
-                }
-                catch (Exception e)
-                {
+                            pp.setAttributes(attrs);
+
+                            // Create and assign the placemark's highlight attributes.
+                            PointPlacemarkAttributes highlightAttributes = new PointPlacemarkAttributes(attrs);
+                            highlightAttributes.setImage(highlightImage);
+                            pp.setHighlightAttributes(highlightAttributes);
+
+                            // Add the placemark to the layer.
+                            layer.addRenderable(pp);
+                            ++count;
+                        }
+                    }
+
+                    System.out.println("count: " + count);
+
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         ApplicationTemplate.start("WorldWind Placemarks", AppFrame.class);
     }
 }

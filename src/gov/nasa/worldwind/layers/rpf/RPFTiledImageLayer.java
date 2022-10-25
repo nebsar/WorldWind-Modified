@@ -557,7 +557,6 @@ public class RPFTiledImageLayer extends TiledImageLayer
         return params;
     }
 
-    @Override
     public void restoreState(String stateInXml)
     {
         String message = Logging.getMessage("RestorableSupport.RestoreRequiresConstructor");
@@ -573,7 +572,6 @@ public class RPFTiledImageLayer extends TiledImageLayer
         {
         }
 
-        @Override
         public java.net.URL getURL(Tile tile, String imageFormat) throws java.net.MalformedURLException
         {
             StringBuffer sb;
@@ -673,7 +671,6 @@ public class RPFTiledImageLayer extends TiledImageLayer
 
     private boolean loadTexture(TextureTile tile, java.net.URL textureURL)
     {
-        System.out.println("surekli yukleniyor mu?");
         if (WWIO.isFileOutOfDate(textureURL, tile.getLevel().getExpiryTime()))
         {
             // The file has expired. Delete it then request download of newer.

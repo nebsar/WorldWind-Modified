@@ -15,7 +15,7 @@ public class MBTilesReader {
 
     private File file;
     private Connection connection;
-    private MapBoxTileLayer.MBTileVersion mBTileVersion;
+    private MapBoxTileLayerNew.MBTileVersion mBTileVersion;
 
     public MBTilesReader(File file) {
         try {
@@ -26,11 +26,11 @@ public class MBTilesReader {
             ResultSet resultSet = SQLHelper.executeQuery(connection, typeQueryString);
 
             if (resultSet.getString("name").equalsIgnoreCase("map")) {
-                this.mBTileVersion = MapBoxTileLayer.MBTileVersion.v10;
+                this.mBTileVersion = MapBoxTileLayerNew.MBTileVersion.v10;
             }
 
         } catch (SQLException se) {
-            this.mBTileVersion = MapBoxTileLayer.MBTileVersion.v13;
+            this.mBTileVersion = MapBoxTileLayerNew.MBTileVersion.v13;
         }
         this.file = file;
     }
@@ -43,7 +43,7 @@ public class MBTilesReader {
         return this.file;
     }
 
-    public MapBoxTileLayer.MBTileVersion getmBTileVersion() {
+    public MapBoxTileLayerNew.MBTileVersion getmBTileVersion() {
         return mBTileVersion;
     }
 
@@ -90,12 +90,12 @@ public class MBTilesReader {
 
             return new MapboxTile(zoom, column, row, tileDataInputStream);
         } catch (SQLException e) {
-           
+
         }
         return null;
     }
 
-//    public MapboxTile getTileV10(int zoom, int column, int row) throws MBTilesReadException {
+    //    public MapboxTile getTileV10(int zoom, int column, int row) throws MBTilesReadException {
 //        String sql = String.format("SELECT tile_data, map.tile_id from map, images WHERE zoom_level = %d AND tile_column = %d AND tile_row = %d AND"
 //                + "map.tile_id = images.tile_id;", zoom, column, row);
 //

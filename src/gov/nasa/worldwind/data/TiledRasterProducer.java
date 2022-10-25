@@ -197,7 +197,6 @@ public abstract class TiledRasterProducer extends AbstractDataStoreProducer
         return this.tileWriteSemaphore;
     }
 
-    @Override
     protected void doStartProduction(AVList parameters) throws Exception
     {
         // Copy production parameters to prevent changes to caller's reference.

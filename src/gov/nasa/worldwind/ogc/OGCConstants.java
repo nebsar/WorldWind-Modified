@@ -68,5 +68,8 @@ public interface OGCConstants
     public static final String OWS_1_1_0_NAMESPACE_URI = "http://www.opengis.net/ows/1.1";
     public static final String WMS_NAMESPACE_URI = "http://www.opengis.net/wms";
     public static final String WCS_1_0_0_NAMESPACE_URI = "http://www.opengis.net/wcs";
+
+    public static final String WMTS_1_0_0_NAMESPACE_URI = "http://www.opengis.net/wmts/1.0";
     public static final String WCS_1_1_1_NAMESPACE_URI = "http://www.opengis.net/wcs/1.1.1";
+
 }
