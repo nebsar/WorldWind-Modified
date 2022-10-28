@@ -18,20 +18,20 @@ import java.util.List;
 
 public class WMTSLayerFactory {
 
-    protected List<String> compatibleImageFormats =
+    protected static List<String> compatibleImageFormats =
             Arrays.asList("image/png",
                     "image/jpg",
                     "image/jpeg",
                     "image/gif",
                     "image/bmp");
-    protected List<String> compatibleWGS84CoordinateSystems =
+    protected static List<String> compatibleWGS84CoordinateSystems =
             Arrays.asList("urn:ogc:def:crs:OGC:1.3:CRS84",
                     "urn:ogc:def:crs:EPSG::4326",
                     "http://www.opengis.net/def/crs/OGC/1.3/CRS84");
 
-    protected List<String> compatibleOtherCoordinatSystems = Arrays.asList("urn:ogc:def:crs:EPSG::3857");
+    protected static List<String> compatibleOtherCoordinatSystems = Arrays.asList("urn:ogc:def:crs:EPSG::3857");
 
-    public AbstractLayer createWMTSImageLayer(Object source, String layerName) {
+    public static AbstractLayer createWMTSImageLayer(Object source, String layerName) {
 
         WMTS100Capabilities wmtsCaps = null;
 
@@ -55,12 +55,12 @@ public class WMTSLayerFactory {
 
         try {
             // Determine if there is a TileMatrixSet which matches our Coordinate System compatibility and tiling scheme
-            List<String> compatibleTileMatrixSets = this.determineWGS84CoordSysCompatibleTileMatrixSets(wmtsLayer);
+            List<String> compatibleTileMatrixSets = determineWGS84CoordSysCompatibleTileMatrixSets(wmtsLayer);
             if (compatibleTileMatrixSets.isEmpty()) {
                 throw new RuntimeException("LayerFactory: createWmtsLayer: Coordinate Systems Not Compatible with WGS84");
             }
 
-            CompatibleTileMatrixSet compatibleTileMatrixSet = this.determineTileSchemeCompatibleTileMatrixSetForWGS84(wmtsLayer.getCapabilities(), compatibleTileMatrixSets);
+            CompatibleTileMatrixSet compatibleTileMatrixSet = determineTileSchemeCompatibleTileMatrixSetForWGS84(wmtsLayer.getCapabilities(), compatibleTileMatrixSets);
             if (compatibleTileMatrixSet == null) {
                 throw new RuntimeException("LayerFactory: createWmtsLayer: Coordinate Systems Not Compatible with WGS84");
             }
@@ -70,7 +70,7 @@ public class WMTSLayerFactory {
             if (resourceUrls != null) {
                 // Attempt to find a supported image format
                 for (WmtsResourceUrl resourceUrl : resourceUrls) {
-                    if (this.compatibleImageFormats.contains(resourceUrl.getFormat())) {
+                    if (compatibleImageFormats.contains(resourceUrl.getFormat())) {
                         template = resourceUrl.getTemplate().replace("{TileMatrixSet}", compatibleTileMatrixSet.tileMatrixSetId);
                     }
                 }
@@ -82,7 +82,7 @@ public class WMTSLayerFactory {
             }
 
             //TODO: Complete KVP if there is not template!
-            String baseUrl = this.determineKvpUrl(wmtsLayer);
+            String baseUrl = determineKvpUrl(wmtsLayer);
 
 
         } catch (Exception ex) {
@@ -99,7 +99,7 @@ public class WMTSLayerFactory {
 
     }
 
-    protected String determineKvpUrl(WmtsLayer layer) {
+    protected static String determineKvpUrl(WmtsLayer layer) {
         WMTS100Capabilities capabilities = layer.getCapabilities();
         OwsOperationsMetadata operationsMetadata = capabilities.getOperationsMetadata();
         if (operationsMetadata == null) {
@@ -132,13 +132,13 @@ public class WMTSLayerFactory {
         }
     }
 
-    protected List<String> determineWGS84CoordSysCompatibleTileMatrixSets(WmtsLayer layer) {
+    protected static List<String> determineWGS84CoordSysCompatibleTileMatrixSets(WmtsLayer layer) {
         List<String> compatibleTileMatrixSets = new ArrayList<>();
 
         // Look for compatible coordinate system types
         List<WmtsTileMatrixSet> tileMatrixSets = layer.getLayerSupportedTileMatrixSets();
         for (WmtsTileMatrixSet tileMatrixSet : tileMatrixSets) {
-            if (this.compatibleWGS84CoordinateSystems.contains(tileMatrixSet.getSupportedCrs())) {
+            if (compatibleWGS84CoordinateSystems.contains(tileMatrixSet.getSupportedCrs())) {
                 compatibleTileMatrixSets.add(tileMatrixSet.getIdentifier());
             }
         }
@@ -146,7 +146,7 @@ public class WMTSLayerFactory {
         return compatibleTileMatrixSets;
     }
 
-    protected CompatibleTileMatrixSet determineTileSchemeCompatibleTileMatrixSetForWGS84(WMTS100Capabilities capabilities, List<String> tileMatrixSetIds) {
+    protected static CompatibleTileMatrixSet determineTileSchemeCompatibleTileMatrixSetForWGS84(WMTS100Capabilities capabilities, List<String> tileMatrixSetIds) {
         CompatibleTileMatrixSet compatibleSet = new CompatibleTileMatrixSet();
 
         // Iterate through each provided tile matrix set
@@ -230,7 +230,7 @@ public class WMTSLayerFactory {
         return null;
     }
 
-    protected AVList createWmtsLevelSet(WmtsLayer wmtsLayer, CompatibleTileMatrixSet compatibleTileMatrixSet, String template) {
+    protected static AVList createWmtsLevelSet(WmtsLayer wmtsLayer, CompatibleTileMatrixSet compatibleTileMatrixSet, String template) {
 
         Sector boundingBox = null;
         OwsWgs84BoundingBox wgs84BoundingBox = wmtsLayer.getWgs84BoundingBox();
@@ -271,7 +271,7 @@ public class WMTSLayerFactory {
         return params;
     }
 
-    protected LevelSet createKVPWmtsLevelSet(WmtsLayer wmtsLayer, CompatibleTileMatrixSet compatibleTileMatrixSet, String template) {
+    protected static LevelSet createKVPWmtsLevelSet(WmtsLayer wmtsLayer, CompatibleTileMatrixSet compatibleTileMatrixSet, String template) {
         Sector boundingBox = null;
         OwsWgs84BoundingBox wgs84BoundingBox = wmtsLayer.getWgs84BoundingBox();
         if (wgs84BoundingBox == null) {
@@ -307,7 +307,7 @@ public class WMTSLayerFactory {
     }
 
 
-    protected String buildWmtsKvpTemplate(String kvpServiceAddress, String layer, String format, String styleIdentifier, String tileMatrixSet) {
+    protected static String buildWmtsKvpTemplate(String kvpServiceAddress, String layer, String format, String styleIdentifier, String tileMatrixSet) {
         StringBuilder urlTemplate = new StringBuilder(kvpServiceAddress);
 
         int index = urlTemplate.indexOf("?");

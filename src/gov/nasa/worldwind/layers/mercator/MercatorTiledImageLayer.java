@@ -65,7 +65,8 @@ public abstract class MercatorTiledImageLayer extends AbstractLayer
     private boolean retainLevelZeroTiles = false;
     private String tileCountName;
     @SuppressWarnings({"FieldCanBeLocal"})
-    private double splitScale = 1.5; // TODO: Make configurable
+    //private double splitScale = 1.5; // for better resolution. But worse performance
+    private double splitScale = 0.9; // for lower resolution. Better performance
     private boolean useMipMaps = false;
     private ArrayList<String> supportedImageFormats = new ArrayList<String>();
 

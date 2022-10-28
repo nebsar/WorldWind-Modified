@@ -25,9 +25,12 @@ public class WMTS3857Layer extends BasicMercatorTiledImageLayer {
 
     protected static List<String> compatibleCoordinateSystems
             = Arrays.asList("urn:ogc:def:crs:EPSG::3857");
+    
+    private String layerName = getClass().getCanonicalName();
 
     public WMTS3857Layer(WMTS100Capabilities caps, String layerName) {
         super(makeLevels(caps, layerName));
+        this.layerName = layerName;
     }
 
     protected static List<String> determineCoordSysCompatibleTileMatrixSets(WmtsLayer layer) {
@@ -61,7 +64,7 @@ public class WMTS3857Layer extends BasicMercatorTiledImageLayer {
         WmtsTileMatrixSet tileMatrixSet = wmtsLayer.getCapabilities().getTileMatrixSet("GoogleMapsCompatible");
 
         int imageSize = tileMatrixSet.getTileMatrices().get(0).getTileHeight();
-        
+
         String styleIdentifier = wmtsLayer.getStyles().get(0).getIdentifier();
 
         AVList params = new AVListImpl();
@@ -72,6 +75,7 @@ public class WMTS3857Layer extends BasicMercatorTiledImageLayer {
         params.setValue(AVKey.DATA_CACHE_NAME, "Earth/WMTS/" + layerName);
         params.setValue("URLTemplate", template);
         params.setValue(AVKey.DATASET_NAME, "*");
+        params.setValue(AVKey.LAYER_NAME, layerName);
         params.setValue(AVKey.FORMAT_SUFFIX, ".jpg");
         params.setValue(AVKey.NUM_LEVELS, 17);
         params.setValue(AVKey.NUM_EMPTY_LEVELS, 0);
@@ -86,16 +90,18 @@ public class WMTS3857Layer extends BasicMercatorTiledImageLayer {
 
     private static class URLBuilder implements TileUrlBuilder {
 
-        public static String TILEMATRIX_TEMPLATE = "{TileMatrix}";
-        public static String TILEROW_TEMPLATE = "{TileRow}";
-        public static String TILECOL_TEMPLATE = "{TileCol}";
-        public static String STYLE_TEMPLATE = "{style}";
-        String URLTemplate;
-        String style;
+        private static String TILEMATRIX_TEMPLATE = "{TileMatrix}";
+        private static String TILEROW_TEMPLATE = "{TileRow}";
+        private static String TILECOL_TEMPLATE = "{TileCol}";
+        private static String STYLE_TEMPLATE = "{style}";
+        private String URLTemplate;
+        private String style;
+        private String layerName;
 
         public URLBuilder(AVList params) {
             URLTemplate = params.getStringValue("URLTemplate");
             this.style = params.getStringValue(AVKey.STYLE_NAMES);
+            this.layerName = params.getStringValue(AVKey.LAYER_NAME);
         }
 
         public URL getURL(Tile tile, String imageFormat)
@@ -104,9 +110,13 @@ public class WMTS3857Layer extends BasicMercatorTiledImageLayer {
             String url = this.URLTemplate.replace(TILEMATRIX_TEMPLATE, (tile.getLevelNumber() + 3) + "");
             url = url.replace(TILEROW_TEMPLATE, ((1 << (tile.getLevelNumber()) + 3) - 1 - tile.getRow()) + "");
             url = url.replace(TILECOL_TEMPLATE, tile.getColumn() + "");
-            url = url.replace(STYLE_TEMPLATE, this.style);
-            url = url.replace("{", "%7B");
-            url = url.replace("}", "%7D");
+            if (style != null) {
+                url = url.replace(STYLE_TEMPLATE, this.style);
+            } else {
+
+                url = url.replace("{", "%7B");
+                url = url.replace("}", "%7D");
+            }
 
             return new URL(url);
         }
@@ -114,6 +124,6 @@ public class WMTS3857Layer extends BasicMercatorTiledImageLayer {
 
     @Override
     public String toString() {
-        return "OpenStreetMap Cycle";
+        return layerName;
     }
 }
