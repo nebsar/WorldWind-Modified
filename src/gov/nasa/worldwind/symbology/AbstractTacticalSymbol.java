@@ -54,7 +54,8 @@ public abstract class AbstractTacticalSymbol extends WWObjectImpl implements Tac
 
     private boolean drawShadedText = false;
 
-    private void setDrawShadedTExt(boolean drawShadedText) {
+    @Override
+    public void setDrawShadedText(boolean drawShadedText) {
         this.drawShadedText = drawShadedText;
     }
 

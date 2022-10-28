@@ -383,5 +383,7 @@ public interface TacticalSymbol extends WWObject, Renderable, Highlightable
      * @param unitsFormat Format used to format text modifiers.
      */
     void setUnitsFormat(UnitsFormat unitsFormat);
+    
+    void setDrawShadedText(boolean drawShadedText);
 }
 
