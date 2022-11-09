@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="gdal">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/gdal.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gluegen-rt-natives-windows-amd64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gluegen-rt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jogl-all-natives-windows-amd64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jogl-all.jar!/" />
+      <root url="jar://$PROJECT_DIR$/sqlite-jdbc-3.36.0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/junit-4.5.jar!/" />
+      <root url="file://$PROJECT_DIR$" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$" recursive="false" />
+  </library>
+</component>

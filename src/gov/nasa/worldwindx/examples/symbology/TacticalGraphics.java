@@ -1,29 +1,7 @@
 /*
- * Copyright 2006-2009, 2017, 2020 United States Government, as represented by the
- * Administrator of the National Aeronautics and Space Administration.
- * All rights reserved.
- * 
- * The NASA World Wind Java (WWJ) platform is licensed under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- * 
- * NASA World Wind Java (WWJ) also contains the following 3rd party Open Source
- * software:
- * 
- *     Jackson Parser – Licensed under Apache 2.0
- *     GDAL – Licensed under MIT
- *     JOGL – Licensed under  Berkeley Software Distribution (BSD)
- *     Gluegen – Licensed under Berkeley Software Distribution (BSD)
- * 
- * A complete listing of 3rd Party software notices and licenses included in
- * NASA World Wind Java (WWJ)  can be found in the WorldWindJava-v2.2 3rd-party
- * notices and licenses PDF found in code directory.
+ * Copyright (C) 2012 United States Government as represented by the Administrator of the
+ * National Aeronautics and Space Administration.
+ * All Rights Reserved.
  */
 
 package gov.nasa.worldwindx.examples.symbology;
@@ -46,11 +24,10 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Demonstrates how to create and display WorldWind tactical graphics. See the 
- * <a href="https://worldwind.arc.nasa.gov/java/tutorials/tactical-graphics/" target="_blank">Tutorial</a>
- * for more
+ * Demonstrates how to create and display WorldWind tactical graphics. See the <a title="Symbology Usage Guide"
+ * href="https://goworldwind.org/developers-guide/symbology/" target="_blank">Symbology Usage Guide</a> for more
  * information on symbology support in WorldWind.
- * <p>
+ * <p/>
  * See the {@link TacticalSymbols} for a detailed example of using WorldWind tactical symbols in an application.
  *
  * @author pabercrombie
@@ -502,10 +479,32 @@ public class TacticalGraphics extends ApplicationTemplate
             TacticalGraphic graphic;
 
             /////////////////////////////////////////////
+			// Block (2.X.1.1)
+			/////////////////////////////////////////////
+            List<Position> positions = Arrays.asList(
+                Position.fromDegrees(34.9349, -117.6303),
+                Position.fromDegrees(34.9843, -117.6303),
+                Position.fromDegrees(34.9596, -117.4891));
+            graphic = factory.createGraphic("GFTPB---------X", positions, null);
+            graphic.setValue(AVKey.DISPLAY_NAME, "Block: (2.X.1.1)");
+            layer.addRenderable(graphic);
+
+            /////////////////////////////////////////////
+			// Penetrate (2.X.1.17)
+			/////////////////////////////////////////////
+            positions = Arrays.asList(
+                Position.fromDegrees(35.0614, -117.6525),
+                Position.fromDegrees(35.0130, -117.6514),
+                Position.fromDegrees(35.0352, -117.7514));
+            graphic = factory.createGraphic("GFTPP---------X", positions, null);
+            graphic.setValue(AVKey.DISPLAY_NAME, "Penetrate: (2.X.1.17)");
+            layer.addRenderable(graphic);
+
+            /////////////////////////////////////////////
             // Assembly area (2.X.2.1.3.2)
             /////////////////////////////////////////////
 
-            List<Position> positions = Arrays.asList(
+            positions = Arrays.asList(
                 Position.fromDegrees(34.9130, -117.1897),
                 Position.fromDegrees(34.9789, -117.1368),
                 Position.fromDegrees(34.9706, -116.9900),
