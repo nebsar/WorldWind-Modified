@@ -27,19 +27,34 @@
  */
 package gov.nasa.worldwindx.examples;
 
+import gov.nasa.worldwind.Configuration;
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.event.*;
 import gov.nasa.worldwind.geom.*;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.pick.PickedObject;
+import gov.nasa.worldwind.pick.PickedObjectList;
 import gov.nasa.worldwind.render.*;
+import gov.nasa.worldwind.symbology.BasicTacticalSymbolAttributes;
+import gov.nasa.worldwind.symbology.IconRetriever;
+import gov.nasa.worldwind.symbology.SymbologyConstants;
+import gov.nasa.worldwind.symbology.TacticalSymbol;
+import gov.nasa.worldwind.symbology.TacticalSymbolAttributes;
+import gov.nasa.worldwind.symbology.milstd2525.MilStd2525IconRetriever;
+import gov.nasa.worldwind.symbology.milstd2525.MilStd2525TacticalSymbol;
 import gov.nasa.worldwindx.applications.worldwindow.util.Util;
 import gov.nasa.worldwindx.examples.util.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Demonstrates how to use the {@link gov.nasa.worldwindx.examples.util.ScreenSelector} utility to perform
@@ -66,6 +81,8 @@ public class ScreenSelection extends ApplicationTemplate
             // with our highlight controller.
             this.selectionHighlightController = new SelectionHighlightController(this.getWwd(), this.screenSelector);
             this.getWwjPanel().highlightController.dispose();
+            
+            this.getWwd().getSceneController().setDeepPickEnabled(true);
 
             // Create a button to enable and disable screen selection.
             JButton btn = new JButton(new EnableSelectorAction());
@@ -80,26 +97,10 @@ public class ScreenSelection extends ApplicationTemplate
         protected void addShapes()
         {
             RenderableLayer layer = new RenderableLayer();
+            
+            createTacticalSymbolPointPlacemark(layer);
 
-            ShapeAttributes highlightAttrs = new BasicShapeAttributes();
-            highlightAttrs.setInteriorMaterial(Material.RED);
-            highlightAttrs.setOutlineMaterial(Material.WHITE);
-
-            for (int lon = -180; lon <= 170; lon += 10)
-            {
-                for (int lat = -60; lat <= 60; lat += 10)
-                {
-                    ExtrudedPolygon poly = new ExtrudedPolygon(Arrays.asList(
-                        LatLon.fromDegrees(lat - 1, Angle.normalizedDegreesLongitude(lon - 1)),
-                        LatLon.fromDegrees(lat - 1, Angle.normalizedDegreesLongitude(lon + 1)),
-                        LatLon.fromDegrees(lat + 1, Angle.normalizedDegreesLongitude(lon + 1)),
-                        LatLon.fromDegrees(lat + 1, Angle.normalizedDegreesLongitude(lon - 1))),
-                        100000d);
-                    poly.setHighlightAttributes(highlightAttrs);
-                    poly.setSideHighlightAttributes(highlightAttrs);
-                    layer.addRenderable(poly);
-                }
-            }
+            
 
             this.getWwd().getModel().getLayers().add(layer);
         }
@@ -141,7 +142,7 @@ public class ScreenSelection extends ApplicationTemplate
     protected static class SelectionHighlightController extends HighlightController implements MessageListener
     {
         protected ScreenSelector screenSelector;
-        protected List<Highlightable> lastBoxHighlightObjects = new ArrayList<Highlightable>();
+        protected PickedObjectList lastBoxHighlightObjects = new PickedObjectList();
 
         public SelectionHighlightController(WorldWindow wwd, ScreenSelector screenSelector)
         {
@@ -167,7 +168,7 @@ public class ScreenSelection extends ApplicationTemplate
                 // both the selection started and selection changed events to ensure that we clear the list of selected
                 // objects when the selection begins or re-starts, as well as update the list when it changes.
                 if (msg.getName().equals(ScreenSelector.SELECTION_STARTED)
-                    || msg.getName().equals(ScreenSelector.SELECTION_CHANGED))
+                    || msg.getName().equals(ScreenSelector.SELECTION_ENDED))
                 {
                     this.highlightSelectedObjects(this.screenSelector.getSelectedObjects());
                 }
@@ -184,8 +185,14 @@ public class ScreenSelection extends ApplicationTemplate
             // Determine if the highlighted object under the cursor has changed, but should remain highlighted because
             // its in the selection box. In this case we assign the highlighted object under the cursor to null and
             // return, and thereby avoid changing the highlight state of objects still highlighted by the selection box.
-            if (this.lastHighlightObject != o && this.lastBoxHighlightObjects.contains(this.lastHighlightObject))
-            {
+            List allObjects = new ArrayList();
+            Iterator iter = lastBoxHighlightObjects.iterator();
+            while (iter.hasNext()) {
+                PickedObject pickedObject = (PickedObject) iter.next();
+                allObjects.add(pickedObject.getObject());
+            }
+
+            if (this.lastHighlightObject != o && allObjects.contains(this.lastHighlightObject)) {
                 this.lastHighlightObject = null;
                 return;
             }
@@ -200,22 +207,26 @@ public class ScreenSelection extends ApplicationTemplate
 
             // Turn off highlight for the last set of selected objects, if any. Since one of these objects may still be
             // highlighted due to a cursor rollover, we detect that object and avoid changing its highlight state.
-            for (Highlightable h : this.lastBoxHighlightObjects)
-            {
-                if (h != this.lastHighlightObject)
-                    h.setHighlighted(false);
+            // Turn off highlight for the last set of selected objects, if any. Since one of these objects may still be
+            // highlighted due to a cursor rollover, we detect that object and avoid changing its highlight state.
+            for (PickedObject h : this.lastBoxHighlightObjects) {
+
+                if (h.getObject() != this.lastHighlightObject)
+                    ((Highlightable) h.getObject()).setHighlighted(false);
             }
             this.lastBoxHighlightObjects.clear();
 
-            if (list != null)
-            {
+            if (list != null) {
                 // Turn on highlight if object selected.
-                for (Object o : list)
-                {
-                    if (o instanceof Highlightable)
-                    {
-                        ((Highlightable) o).setHighlighted(true);
-                        this.lastBoxHighlightObjects.add((Highlightable) o);
+                for (Object o : list) {
+                    if (o instanceof PickedObject) {
+                        PickedObject po = (PickedObject) o;
+                        if (po.getObject() instanceof Highlightable) {
+                            Highlightable highlightable = (Highlightable) po.getObject();
+                            highlightable.setHighlighted(true);
+                            this.lastBoxHighlightObjects.add(po);
+                        }
+
                     }
                 }
             }
@@ -227,6 +238,176 @@ public class ScreenSelection extends ApplicationTemplate
             // there's no mouse movement to cause an automatic redraw.
             this.wwd.redraw();
         }
+    }
+    
+      public static void createTacticalSymbolPointPlacemark(final RenderableLayer layer) {
+        // *** This method is running on thread separate from the EDT. ***
+
+        // Create an icon retriever using the path specified in the config file, or the default path.
+//        String iconRetrieverPath = Configuration.getStringValue(AVKey.MIL_STD_2525_ICON_RETRIEVER_PATH,
+//                MilStd2525Constants.DEFAULT_ICON_RETRIEVER_PATH);
+        List<String> imageList = new ArrayList<>();
+        IconRetriever iconRetriever = new MilStd2525IconRetriever("jar:file:testData/milstd2525-symbols.zip!");
+        String iconRetrieverPath = Configuration.getStringValue(AVKey.MIL_STD_2525_ICON_RETRIEVER_PATH,
+                "jar:file:testData/milstd2525-symbols.zip!");
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile("testData/milstd2525-symbols.zip");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            String s = entry.getName();
+            if (s.contains("war") && s.contains(".png")) {
+                String milStdIconName = s.split("/")[2].split("\\.")[0];
+                //AVList params = new AVListImpl();
+                //BufferedImage symbolImage = iconRetriever.createIcon(milStdIconName, params);
+                imageList.add(milStdIconName);
+
+            }
+        }
+
+        Random random = new Random();
+        final BasicTacticalSymbolAttributes sharedHighlightAttrs = new BasicTacticalSymbolAttributes();
+        sharedHighlightAttrs.setInteriorMaterial(Material.WHITE);
+        sharedHighlightAttrs.setTextModifierMaterial(Material.WHITE);
+        sharedHighlightAttrs.setOpacity(1.0);
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        //AVList params = new AVListImpl();
+        // Create an alternate version of the image that we'll use for highlighting.
+        //params.setValue(AVKey.COLOR, Color.WHITE);
+        //final BufferedImage highlightImage = iconRetriever.createIcon("SFAPMFQM--GIUSA", params);
+        TacticalSymbol.LODSelector lodSelector = new TacticalSymbol.LODSelector() {
+            @Override
+            public void selectLOD(DrawContext dc, TacticalSymbol symbol, double eyeDistance) {
+                // Show text modifiers only when eye distance is less than 50 km.
+                if (eyeDistance < 50e3) {
+                    symbol.setShowTextModifiers(true);
+                } else {
+                    symbol.setShowTextModifiers(false);
+                }
+
+                // Scale the symbol when the eye distance is between 1 and 100 km. The symbol is scaled between
+                // 100% and 25% of its normal size.
+                // The scale is an attribute, so determine which attributes -- normal or highlight -- need to be
+                // set for this rendering.
+                TacticalSymbolAttributes attributes = symbol.isHighlighted()
+                        ? symbol.getHighlightAttributes() : symbol.getAttributes();
+
+                double minScaleDistance = 1e3;
+                double maxScaleDistance = 100e3;
+
+                if (eyeDistance > minScaleDistance && eyeDistance < maxScaleDistance) {
+                    double scale = 0.5;
+                    //+ (maxScaleDistance - eyeDistance) / (maxScaleDistance - minScaleDistance);
+                    attributes.setScale(scale);
+                    // System.out.println(scale);
+                } else {
+                    attributes.setScale(.5);
+                }
+
+                // Show only the symbol's alternate representation when the eye distance is greater than 100 km.
+                if (dc.getView().getEyePosition().getAltitude() < 1000e3) {
+                    symbol.setShowGraphicModifiers(true);
+                    ((MilStd2525TacticalSymbol) symbol).setShowFrame(true);
+                    ((MilStd2525TacticalSymbol) symbol).setShowIcon(true);
+                } else if (dc.getView().getEyePosition().getAltitude() < 10000e3) {
+                    symbol.setShowGraphicModifiers(false);
+                    ((MilStd2525TacticalSymbol) symbol).setShowFrame(true);
+                    ((MilStd2525TacticalSymbol) symbol).setShowIcon(false);
+                } else {
+                    // Setting the symbol's show-frame and  show-icon properties to false causes the symbol's
+                    // alternate representation to be drawn. The alternate representation is a filled circle.
+                    symbol.setShowGraphicModifiers(false);
+                    ((MilStd2525TacticalSymbol) symbol).setShowFrame(false);
+                    ((MilStd2525TacticalSymbol) symbol).setShowIcon(false);
+                }
+            }
+        };
+
+        // Add the placemark to WorldWind on the event dispatch thread.
+        SwingUtilities.invokeLater(new Runnable() {
+            double minLat = 35, maxLat = 45, minLon = -85, maxLon = -80;
+            double delta = 0.04;
+
+            @Override
+            public void run() {
+                try {
+
+                    int count = 0;
+                    for (double lat = minLat; lat <= maxLat; lat += delta) {
+                        for (double lon = minLon; lon <= maxLon; lon += delta) {
+
+                            TacticalSymbolAttributes attributes = new BasicTacticalSymbolAttributes();
+                            attributes.setTextModifierMaterial(Material.RED);
+
+                            attributes.setScale(0.1);
+                            MilStd2525TacticalSymbol airSymbol = new MilStd2525TacticalSymbol("SFGCUCDMLA-GCAG",
+                                    Position.fromDegrees(lat, lon, 3000));
+
+                            airSymbol.setEnableBatchRendering(true);
+                            airSymbol.setDragEnabled(true);
+                            airSymbol.setValue(AVKey.DISPLAY_NAME, imageList.get(random.nextInt(6800))); // Tool tip text.
+                            airSymbol.setAttributes(attributes);
+                             airSymbol.setHighlightAttributes(sharedHighlightAttrs);
+                            airSymbol.setModifier(SymbologyConstants.DIRECTION_OF_MOVEMENT, Angle.fromDegrees(335));
+                            airSymbol.setModifier(SymbologyConstants.OPERATIONAL_CONDITION_ALTERNATE, true);
+                            airSymbol.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                           
+                            airSymbol.setShowLocation(true);
+                            airSymbol.setLODSelector(lodSelector); // specify the LOD selector
+                            //airSymbol.setEnableBatchPicking(false);
+                            layer.addRenderable(airSymbol);
+
+                            // Create a ground tactical symbol for the MIL-STD-2525 symbology set.
+                            // Create a ground tactical symbol for the MIL-STD-2525 symbology set.
+                            //WayPointDiamond w = new WayPointDiamond();
+                            // w.setPosition(Position.fromDegrees(lat, lon, 0));
+                            // layer.addRenderable(w);
+//                            PointPlacemark pp = new PointPlacemark(Position.fromDegrees(lat, lon, 0));
+//                           // pp.setLabelDrawElevation(500000.0d);
+//
+//                            pp.setEnableBatchRendering(true);
+//                            // pp.setEnableDecluttering(true); // enable the placemark for decluttering
+//                            //pp.setEnableLabelPicking(true); // enable the placemark for label picking
+//                            pp.setLabelText("Entity " + (count + 1));
+//                            pp.setLineEnabled(false);
+//                            pp.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+//                            pp.setEnableLabelPicking(true);
+//                            pp.setAlwaysOnTop(true); // Set this flag just to show how to force the placemark to the top
+//
+//                            // Create and assign the placemark attributes.
+//                            PointPlacemarkAttributes attrs = new PointPlacemarkAttributes();
+//                            attrs.setHeading(0.0);
+//                            attrs.setHeadingReference(AVKey.RELATIVE_TO_GLOBE);
+//                            BufferedImage image = imageList.get(random.nextInt(6000));
+//                            attrs.setImage(image);
+//                            attrs.setImageColor(new Color(1f, 1f, 1f, 1f));
+//                            attrs.setLabelOffset(new Offset(0.9d, 0.6d, AVKey.FRACTION, AVKey.FRACTION));
+//                            attrs.setScale(0.2);
+//
+//                            pp.setAttributes(attrs);
+//
+//                            // Create and assign the placemark's highlight attributes.
+//                            PointPlacemarkAttributes highlightAttributes = new PointPlacemarkAttributes(attrs);
+//                            highlightAttributes.setImage(highlightImage);
+//                            pp.setHighlightAttributes(highlightAttributes);
+                            // Add the placemark to the layer.
+                            // layer.addRenderable(pp);
+                            ++count;
+                        }
+                    }
+
+                    System.out.println("count: " + count);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public static void main(String[] args)

@@ -169,7 +169,7 @@ public class FortifiedArea extends BasicArea
         double waveLength = this.getWaveLength();
         if (waveLength == 0)
         {
-            waveLength = this.computeDefaultWavelength(dc.getGlobe());
+            waveLength = 1600;
         }
 
         // A single tooth is half of a full wave.

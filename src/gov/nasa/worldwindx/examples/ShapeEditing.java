@@ -25,7 +25,6 @@
  * NASA World Wind Java (WWJ)  can be found in the WorldWindJava-v2.2 3rd-party
  * notices and licenses PDF found in code directory.
  */
-
 package gov.nasa.worldwindx.examples;
 
 import gov.nasa.worldwind.*;
@@ -48,15 +47,14 @@ import java.util.*;
  * @author tag
  * @version $Id: ShapeEditing.java 3423 2015-09-23 20:59:03Z tgaskins $
  */
-public class ShapeEditing extends ApplicationTemplate
-{
-    public static class AppFrame extends ApplicationTemplate.AppFrame implements SelectListener
-    {
+public class ShapeEditing extends ApplicationTemplate {
+
+    public static class AppFrame extends ApplicationTemplate.AppFrame implements SelectListener {
+
         protected ShapeEditor editor;
         protected ShapeAttributes lastAttrs;
 
-        public AppFrame()
-        {
+        public AppFrame() {
             this.getWwd().addSelectListener(this);
 
             RenderableLayer layer = new RenderableLayer();
@@ -87,10 +85,8 @@ public class ShapeEditing extends ApplicationTemplate
             polygon.setAltitudes(1e4, 2e4);
             polygon.setAltitudeDatum(AVKey.ABOVE_GROUND_LEVEL, AVKey.ABOVE_GROUND_LEVEL);
             layer.addRenderable(polygon);
-            
-            
 
-            CappedCylinder cylinder = new CappedCylinder(LatLon.fromDegrees(40.5, -118), 5e4);            
+            CappedCylinder cylinder = new CappedCylinder(LatLon.fromDegrees(40.5, -118), 5e4);
             cylinder.setDrawSurfaceShape(useSurfaceAirspaces);
             cylinder.setAttributes(attrs);
             cylinder.setHighlightAttributes(highlightAttrs);
@@ -108,7 +104,7 @@ public class ShapeEditing extends ApplicationTemplate
             layer.addRenderable(cylinder);
 
             Orbit orbit = new Orbit(LatLon.fromDegrees(40, -114), LatLon.fromDegrees(41, -114), Orbit.OrbitType.CENTER,
-                4e4);   
+                    4e4);
             orbit.setDrawSurfaceShape(useSurfaceAirspaces);
             orbit.setAttributes(attrs);
             orbit.setHighlightAttributes(highlightAttrs);
@@ -152,7 +148,7 @@ public class ShapeEditing extends ApplicationTemplate
 
             PartialCappedCylinder partialCylinder = new PartialCappedCylinder(LatLon.fromDegrees(40.5, -105), 5e4);
             partialCylinder.setAzimuths(Angle.fromDegrees(270), Angle.fromDegrees(90));
-            partialCylinder.setRadii(3e4, 5e4);
+            partialCylinder.setRadii(3e4, 3e4+0.1);
             partialCylinder.setDrawSurfaceShape(useSurfaceAirspaces);
             partialCylinder.setAttributes(attrs);
             partialCylinder.setHighlightAttributes(highlightAttrs);
@@ -173,7 +169,7 @@ public class ShapeEditing extends ApplicationTemplate
             layer.addRenderable(track);
 
             CappedEllipticalCylinder cec = new CappedEllipticalCylinder(LatLon.fromDegrees(40.5, -100), 5e4, 6e4,
-                Angle.fromDegrees(0));
+                    Angle.fromDegrees(0));
             cec.setRadii(3e4, 4e4, 5e4, 6e4);
             cec.setDrawSurfaceShape(useSurfaceAirspaces);
             cec.setAttributes(attrs);
@@ -183,9 +179,8 @@ public class ShapeEditing extends ApplicationTemplate
             layer.addRenderable(cec);
 
             // Surface Shapes
-
             ShapeAttributes shapeAttributes = new BasicShapeAttributes();
-            attrs.setDrawInterior(true);
+            attrs.setDrawInterior(false);
             attrs.setDrawOutline(true);
             attrs.setInteriorMaterial(new Material(Color.WHITE));
             attrs.setOutlineMaterial(new Material(Color.BLACK));
@@ -212,6 +207,12 @@ public class ShapeEditing extends ApplicationTemplate
             SurfaceCircle circle = new SurfaceCircle(attrs, LatLon.fromDegrees(42.5, -116), 1e5);
             circle.setHighlightAttributes(highlightAttrs);
             layer.addRenderable(circle);
+
+            PartialSurfaceCircle partialCircle = new PartialSurfaceCircle(attrs, LatLon.fromDegrees(42.5, -116), 1e5);
+            partialCircle.setStartAngle(35.7);
+            partialCircle.setEndAngle(234.89);
+            partialCircle.setHighlightAttributes(highlightAttrs);
+            layer.addRenderable(partialCircle);
 
             SurfaceSquare square = new SurfaceSquare(attrs, LatLon.fromDegrees(42.5, -113), 1e5);
             square.setHeading(Angle.fromDegrees(30));
@@ -249,26 +250,20 @@ public class ShapeEditing extends ApplicationTemplate
         }
 
         @Override
-        public void selected(SelectEvent event)
-        {
+        public void selected(SelectEvent event) {
             // This select method identifies the shape to edit.
 
             PickedObject topObject = event.getTopPickedObject();
 
-            if (event.getEventAction().equals(SelectEvent.LEFT_CLICK))
-            {
-                if (topObject != null && this.isEditableShape(topObject.getObject()))
-                {
-                    if (this.editor == null)
-                    {
+            if (event.getEventAction().equals(SelectEvent.LEFT_CLICK)) {
+                if (topObject != null && this.isEditableShape(topObject.getObject())) {
+                    if (this.editor == null) {
                         // Enable editing of the selected shape.
                         this.editor = new ShapeEditor(getWwd(), (Renderable) topObject.getObject());
                         this.editor.setArmed(true);
                         this.keepShapeHighlighted(true);
                         event.consume();
-                    }
-                    else if (this.editor.getShape() != event.getTopObject())
-                    {
+                    } else if (this.editor.getShape() != event.getTopObject()) {
                         // Switch editor to a different shape.
                         this.keepShapeHighlighted(false);
                         this.editor.setArmed(false);
@@ -276,10 +271,8 @@ public class ShapeEditing extends ApplicationTemplate
                         this.editor.setArmed(true);
                         this.keepShapeHighlighted(true);
                         event.consume();
-                    }
-                    else if ((event.getMouseEvent().getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) == 0
-                        && (event.getMouseEvent().getModifiersEx() & MouseEvent.ALT_DOWN_MASK) == 0)
-                    {
+                    } else if ((event.getMouseEvent().getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) == 0
+                            && (event.getMouseEvent().getModifiersEx() & MouseEvent.ALT_DOWN_MASK) == 0) {
                         // Disable editing of the current shape. Shift and Alt are used by the editor, so ignore
                         // events with those buttons down.
                         this.editor.setArmed(false);
@@ -291,28 +284,22 @@ public class ShapeEditing extends ApplicationTemplate
             }
         }
 
-        protected boolean isEditableShape(Object object)
-        {
+        protected boolean isEditableShape(Object object) {
             return object instanceof Airspace || object instanceof SurfaceShape;
         }
 
-        protected void keepShapeHighlighted(boolean tf)
-        {
-            if (tf)
-            {
-                this.lastAttrs = ((Attributable)this.editor.getShape()).getAttributes();
+        protected void keepShapeHighlighted(boolean tf) {
+            if (tf) {
+                this.lastAttrs = ((Attributable) this.editor.getShape()).getAttributes();
                 ((Attributable) this.editor.getShape()).setAttributes(
-                    ((Attributable) this.editor.getShape()).getHighlightAttributes());
-            }
-            else
-            {
-                ((Attributable)this.editor.getShape()).setAttributes(this.lastAttrs);
+                        ((Attributable) this.editor.getShape()).getHighlightAttributes());
+            } else {
+                ((Attributable) this.editor.getShape()).setAttributes(this.lastAttrs);
             }
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         ApplicationTemplate.start("WorldWind Shape Editing", ShapeEditing.AppFrame.class);
     }
 }

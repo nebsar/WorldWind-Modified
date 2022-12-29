@@ -25,9 +25,9 @@
  * NASA World Wind Java (WWJ)  can be found in the WorldWindJava-v2.2 3rd-party
  * notices and licenses PDF found in code directory.
  */
-
 package gov.nasa.worldwind.symbology.milstd2525;
 
+import gov.nasa.worldwind.symbology.milstd2525.graphics.lines.TasksBLetterShape;
 import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.exception.WWRuntimeException;
 import gov.nasa.worldwind.geom.Position;
@@ -44,27 +44,32 @@ import java.util.concurrent.ConcurrentHashMap;
  * Graphic factory to create tactical graphics for the MIL-STD-2525 symbol set.
  *
  * @author pabercrombie
- * @version $Id: MilStd2525GraphicFactory.java 1171 2013-02-11 21:45:02Z dcollins $
+ * @version $Id: MilStd2525GraphicFactory.java 1171 2013-02-11 21:45:02Z
+ * dcollins $
  */
-public class MilStd2525GraphicFactory implements TacticalGraphicFactory
-{
-    /** Map to associate MIL-STD-2525C function codes with implementation classes. */
+public class MilStd2525GraphicFactory implements TacticalGraphicFactory {
+
+    /**
+     * Map to associate MIL-STD-2525C function codes with implementation
+     * classes.
+     */
     protected Map<String, Class> classMap = new ConcurrentHashMap<String, Class>();
 
-    /** Create a new factory. */
-    public MilStd2525GraphicFactory()
-    {
+    /**
+     * Create a new factory.
+     */
+    public MilStd2525GraphicFactory() {
         this.populateClassMap();
     }
 
-    /** Populate the map that maps function IDs to implementation classes. */
-    protected void populateClassMap()
-    {
+    /**
+     * Populate the map that maps function IDs to implementation classes.
+     */
+    protected void populateClassMap() {
         // All point graphics are handled by one class
         this.mapClass(MilStd2525PointGraphic.class, MilStd2525PointGraphic.getSupportedGraphics());
 
         // Command/Control/General Maneuver
-
         this.mapClass(Boundary.class, Boundary.getSupportedGraphics());
         this.mapClass(PhaseLine.class, PhaseLine.getSupportedGraphics());
         this.mapClass(ForwardLineOfOwnTroops.class, ForwardLineOfOwnTroops.getSupportedGraphics());
@@ -102,15 +107,15 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
         this.mapClass(HoldingLine.class, HoldingLine.getSupportedGraphics());
         this.mapClass(LimitedAccessArea.class, LimitedAccessArea.getSupportedGraphics());
         this.mapClass(TasksBLetterShape.class, TasksBLetterShape.getSupportedGraphics());
+        this.mapClass(ObstacleGap.class, ObstacleGap.getSupportedGraphics());
+        this.mapClass(ObstacleArea.class, ObstacleArea.getSupportedGraphics());
 
         // Mobility/survivability
-
         this.mapClass(MinimumSafeDistanceZones.class, MinimumSafeDistanceZones.getSupportedGraphics());
         this.mapClass(FilledArea.class, FilledArea.getSupportedGraphics());
         this.mapClass(DoseRateContourLine.class, DoseRateContourLine.getSupportedGraphics());
 
         // Fire support
-
         this.mapClass(RectangularTarget.class, RectangularTarget.getSupportedGraphics());
         this.mapClass(LinearTarget.class, LinearTarget.getSupportedGraphics());
         this.mapClass(RectangularFireSupportArea.class, RectangularFireSupportArea.getSupportedGraphics());
@@ -128,17 +133,18 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
     }
 
     /**
-     * Specifies the class that the factory will instantiate for a given symbol identifier. This will override the
-     * default implementation class, and can be used to customize the behavior of the factory without needing to extend
-     * the class.
+     * Specifies the class that the factory will instantiate for a given symbol
+     * identifier. This will override the default implementation class, and can
+     * be used to customize the behavior of the factory without needing to
+     * extend the class.
      *
-     * @param sidc  Masked symbol identifier.
-     * @param clazz Implementation class. This class must have a constructor that accepts a string argument.
+     * @param sidc Masked symbol identifier.
+     * @param clazz Implementation class. This class must have a constructor
+     * that accepts a string argument.
      *
      * @see gov.nasa.worldwind.symbology.milstd2525.SymbolCode#toMaskedString()
      */
-    public void setImplementationClass(String sidc, Class clazz)
-    {
+    public void setImplementationClass(String sidc, Class clazz) {
         this.classMap.put(sidc, clazz);
     }
 
@@ -146,12 +152,11 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
      * Associate an implementation class with one or more symbol identifiers.
      *
      * @param clazz Class that implements one or more tactical graphics.
-     * @param ids   Masked symbol IDs of the graphics implemented by {@code clazz}.
+     * @param ids Masked symbol IDs of the graphics implemented by
+     * {@code clazz}.
      */
-    protected void mapClass(Class clazz, List<String> ids)
-    {
-        for (String sidc : ids)
-        {
+    protected void mapClass(Class clazz, List<String> ids) {
+        for (String sidc : ids) {
             this.classMap.put(sidc, clazz);
         }
     }
@@ -164,43 +169,35 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
     @SuppressWarnings({"unchecked"})
     @Override
     public MilStd2525TacticalGraphic createGraphic(String sidc, Iterable<? extends Position> positions,
-        AVList modifiers)
-    {
+            AVList modifiers) {
         SymbolCode symbolCode = new SymbolCode(sidc);
 
         Class clazz = this.getClassForCode(symbolCode);
-        if (clazz == null)
-        {
+        if (clazz == null) {
             return null;
         }
 
-        if (!MilStd2525TacticalGraphic.class.isAssignableFrom(clazz))
-        {
+        if (!MilStd2525TacticalGraphic.class.isAssignableFrom(clazz)) {
             String msg = Logging.getMessage("Symbology.CannotCast", clazz, MilStd2525TacticalGraphic.class);
             Logging.logger().severe(msg);
             throw new IllegalArgumentException(msg);
         }
 
         MilStd2525TacticalGraphic graphic;
-        try
-        {
+        try {
             Constructor ct = clazz.getConstructor(String.class);
             graphic = (MilStd2525TacticalGraphic) ct.newInstance(sidc);
 
-            if (positions != null)
-            {
+            if (positions != null) {
                 graphic.setPositions(positions);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             String msg = Logging.getMessage("Symbology.ExceptionCreatingGraphic", e.getMessage());
             Logging.logger().severe(msg);
             throw new WWRuntimeException(e);
         }
 
-        if (modifiers != null)
-        {
+        if (modifiers != null) {
             this.setModifiers(graphic, modifiers);
         }
 
@@ -212,15 +209,11 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
      *
      * @param sidc MIL-STD-2525 symbol identification code (SIDC).
      */
-    public TacticalPoint createPoint(String sidc, Position position, AVList params)
-    {
+    public TacticalPoint createPoint(String sidc, Position position, AVList params) {
         TacticalGraphic graphic = this.createGraphic(sidc, Arrays.asList(position), params);
-        if (graphic instanceof TacticalPoint)
-        {
+        if (graphic instanceof TacticalPoint) {
             return (TacticalPoint) graphic;
-        }
-        else if (graphic != null)
-        {
+        } else if (graphic != null) {
             String className = graphic.getClass().getName();
             String msg = Logging.getMessage("Symbology.CannotCast", className, TacticalPoint.class.getName());
             Logging.logger().severe(msg);
@@ -230,18 +223,16 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
         return null;
     }
 
-    /** {@inheritDoc} */
-    public TacticalCircle createCircle(String sidc, Position center, double radius, AVList modifiers)
-    {
+    /**
+     * {@inheritDoc}
+     */
+    public TacticalCircle createCircle(String sidc, Position center, double radius, AVList modifiers) {
         TacticalGraphic graphic = this.createPoint(sidc, center, modifiers);
-        if (graphic instanceof TacticalCircle)
-        {
+        if (graphic instanceof TacticalCircle) {
             TacticalCircle circle = (TacticalCircle) graphic;
             circle.setRadius(radius);
             return circle;
-        }
-        else if (graphic != null)
-        {
+        } else if (graphic != null) {
             String className = graphic.getClass().getName();
             String msg = Logging.getMessage("Symbology.CannotCast", className, TacticalCircle.class.getName());
             Logging.logger().severe(msg);
@@ -251,16 +242,14 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
         return null;
     }
 
-    /** {@inheritDoc} */
-    public TacticalQuad createQuad(String sidc, Iterable<? extends Position> positions, AVList modifiers)
-    {
+    /**
+     * {@inheritDoc}
+     */
+    public TacticalQuad createQuad(String sidc, Iterable<? extends Position> positions, AVList modifiers) {
         TacticalGraphic graphic = this.createGraphic(sidc, positions, modifiers);
-        if (graphic instanceof TacticalQuad)
-        {
+        if (graphic instanceof TacticalQuad) {
             return (TacticalQuad) graphic;
-        }
-        else if (graphic != null)
-        {
+        } else if (graphic != null) {
             String className = graphic.getClass().getName();
             String msg = Logging.getMessage("Symbology.CannotCast", className, TacticalQuad.class.getName());
             Logging.logger().severe(msg);
@@ -270,19 +259,17 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public TacticalRoute createRoute(String sidc, Iterable<? extends TacticalPoint> controlPoints,
-        AVList modifiers)
-    {
+            AVList modifiers) {
         TacticalGraphic graphic = this.createGraphic(sidc, null, modifiers);
-        if (graphic instanceof TacticalRoute)
-        {
+        if (graphic instanceof TacticalRoute) {
             TacticalRoute route = (TacticalRoute) graphic;
             route.setControlPoints(controlPoints);
             return route;
-        }
-        else if (graphic != null)
-        {
+        } else if (graphic != null) {
             String className = graphic.getClass().getName();
             String msg = Logging.getMessage("Symbology.CannotCast", className, TacticalRoute.class.getName());
             Logging.logger().severe(msg);
@@ -292,18 +279,17 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
         return null;
     }
 
-    /** {@inheritDoc} */
-    public boolean isSupported(String sidc)
-    {
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isSupported(String sidc) {
         SymbolCode symbolCode = new SymbolCode(sidc);
         String key = symbolCode.toMaskedString();
         return this.classMap.containsKey(key);
     }
 
-    protected void setModifiers(TacticalGraphic graphic, AVList props)
-    {
-        for (Map.Entry<String, Object> entry : props.getEntries())
-        {
+    protected void setModifiers(TacticalGraphic graphic, AVList props) {
+        for (Map.Entry<String, Object> entry : props.getEntries()) {
             graphic.setModifier(entry.getKey(), entry.getValue());
         }
     }
@@ -313,10 +299,10 @@ public class MilStd2525GraphicFactory implements TacticalGraphicFactory
      *
      * @param symbolCode Parsed SIDC that identifies the graphic.
      *
-     * @return The implementation class for the specified SIDC, or {@code null} if no implementation class is found.
+     * @return The implementation class for the specified SIDC, or {@code null}
+     * if no implementation class is found.
      */
-    protected Class getClassForCode(SymbolCode symbolCode)
-    {
+    protected Class getClassForCode(SymbolCode symbolCode) {
         String key = symbolCode.toMaskedString();
         return key != null ? this.classMap.get(key) : null;
     }

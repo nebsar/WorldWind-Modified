@@ -2,25 +2,25 @@
  * Copyright 2006-2009, 2017, 2020 United States Government, as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All rights reserved.
- * 
+ *
  * The NASA World Wind Java (WWJ) platform is licensed under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- * 
+ *
  * NASA World Wind Java (WWJ) also contains the following 3rd party Open Source
  * software:
- * 
+ *
  *     Jackson Parser – Licensed under Apache 2.0
  *     GDAL – Licensed under MIT
  *     JOGL – Licensed under  Berkeley Software Distribution (BSD)
  *     Gluegen – Licensed under Berkeley Software Distribution (BSD)
- * 
+ *
  * A complete listing of 3rd Party software notices and licenses included in
  * NASA World Wind Java (WWJ)  can be found in the WorldWindJava-v2.2 3rd-party
  * notices and licenses PDF found in code directory.
@@ -29,46 +29,72 @@ package gov.nasa.worldwindx.examples;
 
 import gov.nasa.worldwind.*;
 import gov.nasa.worldwind.avlist.*;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.Earth.MGRSGraticuleLayer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.*;
-import gov.nasa.worldwind.symbology.IconRetriever;
+import gov.nasa.worldwind.symbology.*;
 import gov.nasa.worldwind.symbology.milstd2525.*;
+import gov.nasa.worldwind.util.PlacemarkClutterFilter;
 import gov.nasa.worldwind.util.WWUtil;
+import gov.nasa.worldwindx.examples.util.ScreenSelector;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Random;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Illustrates how to use {@link gov.nasa.worldwind.render.PointPlacemark}. Also
  * shows how to use a 2525 tactical symbol as a placemark image.
  *
- * @see gov.nasa.worldwindx.examples.PlacemarkLabelEditing
- *
  * @author tag
  * @version $Id: Placemarks.java 2812 2015-02-17 21:00:43Z tgaskins $
+ * @see gov.nasa.worldwindx.examples.PlacemarkLabelEditing
  */
 public class Placemarks extends ApplicationTemplate {
 
     public static class AppFrame extends ApplicationTemplate.AppFrame {
 
         public AppFrame() {
-            super(true, true, false);
+            super(true, true, true);
+            
+             // Create a screen selector to display a screen selection rectangle and track the objects intersecting
+        // that rectangle.
+            ScreenSelector screenSelector = new ScreenSelector(this.getWwd());
 
+        // Set up a custom highlight controller that highlights objects both under the cursor and inside the
+        // selection rectangle. Disable the superclass' default highlight controller to prevent it from interfering
+        // with our highlight controller.
+            ScreenSelection.SelectionHighlightController selectionHighlightController = new ScreenSelection.SelectionHighlightController(this.getWwd(), screenSelector);
+            
+            screenSelector.enable();
+
+            //this.getWwd().getSceneController().setClutterFilter(new PlacemarkClutterFilter());
             final RenderableLayer layer = new RenderableLayer();
-            //MGRSGraticuleLayer mgrs = new MGRSGraticuleLayer();
-            //getWwd().getModel().getLayers().add(mgrs);
-            PointPlacemark pp = new PointPlacemark(Position.fromDegrees(28, -102, 1e4));
 
+            MGRSGraticuleLayer mgrsLayer = new MGRSGraticuleLayer();
+            getWwd().getModel().getLayers().add(mgrsLayer);
+
+            getWwd().getView().getViewInputHandler().setEnableSmoothing(false);
+
+           // getWwd().getView().getViewPropertyLimits().setPitchLimits(Angle.ZERO, Angle.ZERO);
+
+            PointPlacemark pp = new PointPlacemark(Position.fromDegrees(28, -102, 1e4));
+            //pp.setEnableDecluttering(true);
             pp.setLabelText("Placemark A");
             pp.setValue(AVKey.DISPLAY_NAME, "Clamp to ground, Label, Semi-transparent, Audio icon");
             pp.setLineEnabled(false);
             pp.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
             pp.setEnableLabelPicking(true); // enable label picking for this placemark
             PointPlacemarkAttributes attrs = new PointPlacemarkAttributes();
-
             attrs.setImageAddress("gov/nasa/worldwindx/examples/images/audioicon-64.png");
             attrs.setImageColor(new Color(1f, 1f, 1f, 0.6f));
             attrs.setScale(0.6);
@@ -241,22 +267,94 @@ public class Placemarks extends ApplicationTemplate {
         // *** This method is running on thread separate from the EDT. ***
 
         // Create an icon retriever using the path specified in the config file, or the default path.
-        String iconRetrieverPath = Configuration.getStringValue(AVKey.MIL_STD_2525_ICON_RETRIEVER_PATH,
-                MilStd2525Constants.DEFAULT_ICON_RETRIEVER_PATH);
+//        String iconRetrieverPath = Configuration.getStringValue(AVKey.MIL_STD_2525_ICON_RETRIEVER_PATH,
+//                MilStd2525Constants.DEFAULT_ICON_RETRIEVER_PATH);
+        List<String> imageList = new ArrayList<>();
         IconRetriever iconRetriever = new MilStd2525IconRetriever("jar:file:testData/milstd2525-symbols.zip!");
+        String iconRetrieverPath = Configuration.getStringValue(AVKey.MIL_STD_2525_ICON_RETRIEVER_PATH,
+                "jar:file:testData/milstd2525-symbols.zip!");
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile("testData/milstd2525-symbols.zip");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            String s = entry.getName();
+            if (s.contains("war") && s.contains(".png")) {
+                String milStdIconName = s.split("/")[2].split("\\.")[0];
+                //AVList params = new AVListImpl();
+                //BufferedImage symbolImage = iconRetriever.createIcon(milStdIconName, params);
+                imageList.add(milStdIconName);
 
-        // Retrieve the tactical symbol image we'll use for the placemark.
-        AVList params = new AVListImpl();
-        final BufferedImage symbolImage = iconRetriever.createIcon("SFAPMFQM--GIUSA", params);
+            }
+        }
 
+        Random random = new Random();
+        final BasicTacticalSymbolAttributes sharedHighlightAttrs = new BasicTacticalSymbolAttributes();
+        sharedHighlightAttrs.setInteriorMaterial(Material.WHITE);
+        sharedHighlightAttrs.setTextModifierMaterial(Material.WHITE);
+        sharedHighlightAttrs.setOpacity(1.0);
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        //AVList params = new AVListImpl();
         // Create an alternate version of the image that we'll use for highlighting.
-        params.setValue(AVKey.COLOR, Color.WHITE);
-        final BufferedImage highlightImage = iconRetriever.createIcon("SFAPMFQM--GIUSA", params);
+        //params.setValue(AVKey.COLOR, Color.WHITE);
+        //final BufferedImage highlightImage = iconRetriever.createIcon("SFAPMFQM--GIUSA", params);
+        TacticalSymbol.LODSelector lodSelector = new TacticalSymbol.LODSelector() {
+            @Override
+            public void selectLOD(DrawContext dc, TacticalSymbol symbol, double eyeDistance) {
+                // Show text modifiers only when eye distance is less than 50 km.
+                if (eyeDistance < 50e3) {
+                    symbol.setShowTextModifiers(true);
+                } else {
+                    symbol.setShowTextModifiers(false);
+                }
+
+                // Scale the symbol when the eye distance is between 1 and 100 km. The symbol is scaled between
+                // 100% and 25% of its normal size.
+                // The scale is an attribute, so determine which attributes -- normal or highlight -- need to be
+                // set for this rendering.
+                TacticalSymbolAttributes attributes = symbol.isHighlighted()
+                        ? symbol.getHighlightAttributes() : symbol.getAttributes();
+
+                double minScaleDistance = 1e3;
+                double maxScaleDistance = 100e3;
+
+                if (eyeDistance > minScaleDistance && eyeDistance < maxScaleDistance) {
+                    double scale = 0.5;
+                    //+ (maxScaleDistance - eyeDistance) / (maxScaleDistance - minScaleDistance);
+                    attributes.setScale(scale);
+                    // System.out.println(scale);
+                } else {
+                    attributes.setScale(.5);
+                }
+
+                // Show only the symbol's alternate representation when the eye distance is greater than 100 km.
+                if (dc.getView().getEyePosition().getAltitude() < 1000e3) {
+                    symbol.setShowGraphicModifiers(true);
+                    ((MilStd2525TacticalSymbol) symbol).setShowFrame(true);
+                    ((MilStd2525TacticalSymbol) symbol).setShowIcon(true);
+                } else if (dc.getView().getEyePosition().getAltitude() < 10000e3) {
+                    symbol.setShowGraphicModifiers(false);
+                    ((MilStd2525TacticalSymbol) symbol).setShowFrame(true);
+                    ((MilStd2525TacticalSymbol) symbol).setShowIcon(false);
+                } else {
+                    // Setting the symbol's show-frame and  show-icon properties to false causes the symbol's
+                    // alternate representation to be drawn. The alternate representation is a filled circle.
+                    symbol.setShowGraphicModifiers(false);
+                    ((MilStd2525TacticalSymbol) symbol).setShowFrame(false);
+                    ((MilStd2525TacticalSymbol) symbol).setShowIcon(false);
+                }
+            }
+        };
 
         // Add the placemark to WorldWind on the event dispatch thread.
         SwingUtilities.invokeLater(new Runnable() {
             double minLat = 35, maxLat = 45, minLon = -85, maxLon = -80;
-            double delta = 0.1;
+            double delta = 0.04;
 
             @Override
             public void run() {
@@ -265,32 +363,62 @@ public class Placemarks extends ApplicationTemplate {
                     int count = 0;
                     for (double lat = minLat; lat <= maxLat; lat += delta) {
                         for (double lon = minLon; lon <= maxLon; lon += delta) {
-                            PointPlacemark pp = new PointPlacemark(Position.fromDegrees(lat, lon, 0));
-                            pp.setEnableDecluttering(true);
-                            pp.setEnableLabelPicking(true);
-                            pp.setEnableBatchRendering(true);
-                            pp.setLabelText("Entity " + (count + 1));
-                            pp.setLineEnabled(false);
-                            pp.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                            pp.setEnableLabelPicking(true);
-                            pp.setAlwaysOnTop(true); // Set this flag just to show how to force the placemark to the top
 
-                            // Create and assign the placemark attributes.
-                            PointPlacemarkAttributes attrs = new PointPlacemarkAttributes();
-                            attrs.setImage(symbolImage);
-                            attrs.setImageColor(new Color(1f, 1f, 1f, 1f));
-                            attrs.setLabelOffset(new Offset(0.9d, 0.6d, AVKey.FRACTION, AVKey.FRACTION));
-                            attrs.setScale(0.1);
+                            TacticalSymbolAttributes attributes = new BasicTacticalSymbolAttributes();
+                            attributes.setTextModifierMaterial(Material.RED);
 
-                            pp.setAttributes(attrs);
+                            attributes.setScale(0.1);
+                            MilStd2525TacticalSymbol airSymbol = new MilStd2525TacticalSymbol("SFGCUCDMLA-GCAG",
+                                    Position.fromDegrees(lat, lon, 3000));
 
-                            // Create and assign the placemark's highlight attributes.
-                            PointPlacemarkAttributes highlightAttributes = new PointPlacemarkAttributes(attrs);
-                            highlightAttributes.setImage(highlightImage);
-                            pp.setHighlightAttributes(highlightAttributes);
+                            airSymbol.setEnableBatchRendering(true);
+                            airSymbol.setDragEnabled(true);
+                            airSymbol.setValue(AVKey.DISPLAY_NAME, imageList.get(random.nextInt(6800))); // Tool tip text.
+                            airSymbol.setAttributes(attributes);
+                             airSymbol.setHighlightAttributes(sharedHighlightAttrs);
+                            airSymbol.setModifier(SymbologyConstants.DIRECTION_OF_MOVEMENT, Angle.fromDegrees(335));
+                            airSymbol.setModifier(SymbologyConstants.OPERATIONAL_CONDITION_ALTERNATE, true);
+                            airSymbol.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                           
+                            airSymbol.setShowLocation(true);
+                            airSymbol.setLODSelector(lodSelector); // specify the LOD selector
+                            layer.addRenderable(airSymbol);
 
+                            // Create a ground tactical symbol for the MIL-STD-2525 symbology set.
+                            // Create a ground tactical symbol for the MIL-STD-2525 symbology set.
+                            //WayPointDiamond w = new WayPointDiamond();
+                            // w.setPosition(Position.fromDegrees(lat, lon, 0));
+                            // layer.addRenderable(w);
+//                            PointPlacemark pp = new PointPlacemark(Position.fromDegrees(lat, lon, 0));
+//                           // pp.setLabelDrawElevation(500000.0d);
+//
+//                            pp.setEnableBatchRendering(true);
+//                            // pp.setEnableDecluttering(true); // enable the placemark for decluttering
+//                            //pp.setEnableLabelPicking(true); // enable the placemark for label picking
+//                            pp.setLabelText("Entity " + (count + 1));
+//                            pp.setLineEnabled(false);
+//                            pp.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+//                            pp.setEnableLabelPicking(true);
+//                            pp.setAlwaysOnTop(true); // Set this flag just to show how to force the placemark to the top
+//
+//                            // Create and assign the placemark attributes.
+//                            PointPlacemarkAttributes attrs = new PointPlacemarkAttributes();
+//                            attrs.setHeading(0.0);
+//                            attrs.setHeadingReference(AVKey.RELATIVE_TO_GLOBE);
+//                            BufferedImage image = imageList.get(random.nextInt(6000));
+//                            attrs.setImage(image);
+//                            attrs.setImageColor(new Color(1f, 1f, 1f, 1f));
+//                            attrs.setLabelOffset(new Offset(0.9d, 0.6d, AVKey.FRACTION, AVKey.FRACTION));
+//                            attrs.setScale(0.2);
+//
+//                            pp.setAttributes(attrs);
+//
+//                            // Create and assign the placemark's highlight attributes.
+//                            PointPlacemarkAttributes highlightAttributes = new PointPlacemarkAttributes(attrs);
+//                            highlightAttributes.setImage(highlightImage);
+//                            pp.setHighlightAttributes(highlightAttributes);
                             // Add the placemark to the layer.
-                            layer.addRenderable(pp);
+                            // layer.addRenderable(pp);
                             ++count;
                         }
                     }
@@ -305,6 +433,9 @@ public class Placemarks extends ApplicationTemplate {
     }
 
     public static void main(String[] args) {
+        
+        Configuration.setValue("gov.nasa.worldwind.avkey.MilStd2525IconRetrieverPath", "jar:file:testData/milstd2525-symbols.zip!");
+
         ApplicationTemplate.start("WorldWind Placemarks", AppFrame.class);
     }
 }

@@ -70,7 +70,7 @@ public class LayerTreeUsage extends ApplicationTemplate
             this.layerTree.getModel().refresh(this.getWwd().getModel().getLayers());
 
             // Add a controller to handle input events on the layer tree.
-            this.controller = new HotSpotController(this.getWwd());
+            new HotSpotController(this.getWwd());
 
             // Size the WorldWindow to take up the space typically used by the layer panel. This illustrates the
             // screen space gained by using the on-screen layer tree.

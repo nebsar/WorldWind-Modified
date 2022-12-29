@@ -478,7 +478,7 @@ public class MilStd2525PointGraphic extends AVListImpl implements MilStd2525Tact
 
     /** {@inheritDoc} */
     public void setHighlighted(boolean highlighted)
-    {
+    {   this.symbol.setHighlighted(highlighted);
         this.highlighted = highlighted;
     }
 

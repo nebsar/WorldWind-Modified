@@ -195,12 +195,12 @@ public class Encirclement extends BasicArea
         double waveLength = this.getWaveLength();
         if (waveLength == 0)
         {
-            waveLength = this.computeDefaultWavelength(dc.getGlobe());
+            waveLength = 2500;
         }
         double amplitude = waveLength / 2.0;
 
         TriangleWavePositionIterator iterator = new TriangleWavePositionIterator(positions, waveLength, amplitude,
-            globe);
+            globe, false);
         while (iterator.hasNext())
         {
             wavePositions.add(iterator.next());
@@ -259,7 +259,11 @@ public class Encirclement extends BasicArea
         double complexity = Math.sqrt(count / 3.0);
 
         perimeter = perimeter * globe.getRadius(); // Convert perimeter to meters.
+        
+       double numwaves = perimeter * DEFAULT_NUM_WAVES / 45388.37616672155;
+       
+        System.out.println("How many: " +  perimeter / (complexity * DEFAULT_NUM_WAVES));
 
-        return perimeter / (complexity * DEFAULT_NUM_WAVES);
+        return 2500;
     }
 }

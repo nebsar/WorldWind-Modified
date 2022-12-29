@@ -595,7 +595,7 @@ public class ScreenSelector extends WWObjectImpl implements MouseListener, Mouse
         {
             // Respond to box rollover select events when armed.
             if (event.getEventAction().equals(SelectEvent.BOX_ROLLOVER) && this.armed)
-                this.selectObjects(event.getAllTopObjects());
+                this.selectObjects(event.getObjects());
         }
         catch (Exception e)
         {

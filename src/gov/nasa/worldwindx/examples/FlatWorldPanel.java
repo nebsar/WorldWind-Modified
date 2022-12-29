@@ -68,7 +68,7 @@ public class FlatWorldPanel extends JPanel
             this.flatGlobe = new EarthFlat();
             this.roundGlobe = wwd.getModel().getGlobe();
         }
-        this.flatGlobe.setElevationModel(new ZeroElevationModel());
+        //this.flatGlobe.setElevationModel(new ZeroElevationModel());
         this.makePanel();
     }
 

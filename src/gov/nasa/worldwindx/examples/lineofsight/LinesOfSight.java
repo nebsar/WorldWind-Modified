@@ -75,7 +75,7 @@ public class LinesOfSight extends ApplicationTemplate
     protected static final int GRID_POSITION_HEIGHT = 1;
 
     /** The desired terrain resolution to use in the intersection calculations. */
-    protected static final Double TARGET_RESOLUTION = 20d; // meters, or null for globe's highest resolution
+    protected static final Double TARGET_RESOLUTION = null; // meters, or null for globe's highest resolution
 
     protected static final int NUM_TERRAIN_THREADS = 1; // set to 1 to run terrain intersections synchronously
     protected static final int NUM_SHAPE_THREADS = 1; // set to 1 to run shape intersections synchronously

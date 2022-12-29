@@ -486,6 +486,8 @@ public interface TacGrpSidc
     // Mobility/Survivability
     ///////////////////////////////////////////
 
+    /** Obstacle Gap*/
+    final String MOBSU_OBST_GAP = "G-M-BCB--------";
     /** Belt */
     final String MOBSU_OBST_GNL_BLT = "G-M-OGB--------";
     /** Line */

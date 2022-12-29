@@ -34,6 +34,8 @@ import gov.nasa.worldwind.geom.*;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.*;
 import gov.nasa.worldwind.symbology.*;
+import gov.nasa.worldwind.symbology.milstd2525.MilStd2525Constants;
+import gov.nasa.worldwind.symbology.milstd2525.MilStd2525IconRetriever;
 import gov.nasa.worldwind.symbology.milstd2525.MilStd2525TacticalSymbol;
 import gov.nasa.worldwind.util.*;
 import gov.nasa.worldwindx.examples.ApplicationTemplate;
@@ -63,6 +65,7 @@ public class TacticalSymbols extends ApplicationTemplate
         protected TacticalSymbolAttributes sharedAttrs;
         protected TacticalSymbolAttributes sharedHighlightAttrs;
         protected BasicDragger dragger;
+        protected IconRetriever iconRetriever;
 
         public AppFrame()
         {
@@ -89,8 +92,14 @@ public class TacticalSymbols extends ApplicationTemplate
             // The Echelon, Task Force Indicator, and Feint/Dummy Indicator are specified in characters 11-12 of the
             // symbol identifier ("GI"). The Direction of Movement is specified by calling TacticalSymbol.setModifier
             // with the appropriate key and value.
-            TacticalSymbol airSymbol = new MilStd2525TacticalSymbol("SFAPMFQM--GIUSA",
+            
+//            String iconRetrieverPath = Configuration.getStringValue(AVKey.MIL_STD_2525_ICON_RETRIEVER_PATH,
+//                MilStd2525Constants.DEFAULT_ICON_RETRIEVER_PATH);
+            this.iconRetriever = new MilStd2525IconRetriever("jar:file:milstd2525-symbols.zip!");
+            
+            TacticalSymbol airSymbol = new MilStd2525TacticalSymbol("SFAPWMSA------A",
                 Position.fromDegrees(32.4520, 63.44553, 3000));
+         
             airSymbol.setValue(AVKey.DISPLAY_NAME, "MIL-STD-2525 Friendly SOF Drone Aircraft"); // Tool tip text.
             airSymbol.setAttributes(this.sharedAttrs);
             airSymbol.setHighlightAttributes(this.sharedHighlightAttrs);
@@ -106,8 +115,8 @@ public class TacticalSymbols extends ApplicationTemplate
             // Direction of Movement and Speed Leader are specified by calling TacticalSymbol.setModifier with the
             // appropriate key and value.The Speed Leader modifier has the effect of scaling the Direction of Movement's
             // line segment. In this example, we've scaled the line to 50% of its original length.
-            TacticalSymbol groundSymbol = new MilStd2525TacticalSymbol("SHGXUCFRMS----G",
-                Position.fromDegrees(32.4014, 63.3894, 0));
+            TacticalSymbol groundSymbol = new MilStd2525TacticalSymbol("SFGPUCFTCDAF---",
+                Position.fromDegrees(32.4014, 63.3894, 2000));
             groundSymbol.setValue(AVKey.DISPLAY_NAME, "MIL-STD-2525 Hostile Self-Propelled Rocket Launchers");
             groundSymbol.setAttributes(this.sharedAttrs);
             groundSymbol.setHighlightAttributes(this.sharedHighlightAttrs);

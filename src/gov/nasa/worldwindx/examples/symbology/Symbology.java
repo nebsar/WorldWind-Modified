@@ -86,7 +86,7 @@ public class Symbology extends ApplicationTemplate
             // Create a tactical symbol for the MIL-STD-2525 symbology set. The symbol identifier specifies a
             // MIL-STD-2525 friendly Special Operations Forces Drone Aircraft. The position places the tactical symbol
             // at 3km above mean sea level.
-            TacticalSymbol symbol = new MilStd2525TacticalSymbol("SFAPMFQM------A",
+            TacticalSymbol symbol = new MilStd2525TacticalSymbol("SUPPT----------",
                 Position.fromDegrees(34.4934, -117.6003, 3000));
             symbol.setValue(AVKey.DISPLAY_NAME, "MIL-STD-2525 Tactical Symbol"); // Tool tip text.
             symbol.setShowLocation(false);

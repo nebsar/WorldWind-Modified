@@ -209,7 +209,7 @@ public class SelectEvent extends WWEvent
      */
     public List<?> getAllTopObjects()
     {
-        return this.hasObjects() ? this.pickedObjects.getAllTopObjects() : null;
+        return this.hasObjects() ? this.pickedObjects : null;
     }
 
     public boolean isRollover()

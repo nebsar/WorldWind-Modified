@@ -292,6 +292,7 @@ public class Airspaces extends ApplicationTemplate
             partCyl.setAltitudes(5000.0, 10000.0);
             partCyl.setAzimuths(Angle.fromDegrees(0.0), Angle.fromDegrees(90.0));
             partCyl.setTerrainConforming(false, false);
+            partCyl.setDrawSurfaceShape(true);
             partCyl.setValue(AVKey.DISPLAY_NAME, "Partial Cylinder from 0 to 90 degrees");
             layer.addRenderable(partCyl);
 

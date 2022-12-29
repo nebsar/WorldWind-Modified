@@ -2215,6 +2215,7 @@ public abstract class AbstractTacticalSymbol extends WWObjectImpl implements Tac
 
     protected void draw(DrawContext dc, OrderedSymbol osym) {
         GL2 gl = dc.getGL().getGL2(); // GL initialization checks for GL2 compatibility.
+
         try {
             gl.glPushMatrix();
             gl.glScaled(osym.sx, osym.sy, 1d);
@@ -2229,6 +2230,35 @@ public abstract class AbstractTacticalSymbol extends WWObjectImpl implements Tac
             }
         } finally {
             gl.glPopMatrix();
+        }
+
+        if (isHighlighted()) {
+
+            try {
+
+                gl.glPushMatrix();
+                gl.glScaled(osym.sx, osym.sy, 1d);
+                gl.glTranslated(osym.dx, osym.dy, 0d);
+                gl.glDisable(GL.GL_TEXTURE_2D);
+                gl.glDisable(GL.GL_DEPTH_TEST);
+
+                gl.glColor4f(1f, 0f, 0f, 1f);
+                gl.glBegin(GL2.GL_LINE_LOOP);
+                gl.glVertex2d(iconRect.getX(), iconRect.getY());
+                gl.glVertex2d(iconRect.getX() + iconRect.getWidth(), iconRect.getY());
+                gl.glVertex2d(iconRect.getX() + iconRect.getWidth(), iconRect.getY() + iconRect.getHeight());
+                gl.glVertex2d(iconRect.getX(), iconRect.getY() + iconRect.getHeight());
+                gl.glEnd();
+
+                gl.glEnable(GL.GL_DEPTH_TEST);
+                gl.glEnable(GL.GL_TEXTURE_2D);
+                gl.glDepthRange(0.0, 1.0);
+
+            } finally {
+
+                gl.glPopMatrix();
+            }
+
         }
 
         if (this.mustDrawTextModifiers(dc) && !dc.isPickingMode()) {
